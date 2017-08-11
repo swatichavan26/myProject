@@ -1,0 +1,8 @@
+// reset hard with development
+git reset --hard origin/development
+
+//get all my branhes 
+git for-each-ref --format=' %(authorname) %09 %(refname)' --sort=authorname | grep Shekhar
+
+//get all branches by date
+git for-each-ref --sort=committerdate refs/heads/ --format='%(committerdate:short) %(refname:short)'
