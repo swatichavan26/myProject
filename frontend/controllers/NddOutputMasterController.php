@@ -8,17 +8,17 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use common\components\BuiltMasterNew;
 
 /**
  * NddOutputMasterController implements the CRUD actions for NddOutputMaster model.
  */
-class NddOutputMasterController extends Controller
-{
+class NddOutputMasterController extends Controller {
+
     /**
      * @inheritdoc
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -33,14 +33,13 @@ class NddOutputMasterController extends Controller
      * Lists all NddOutputMaster models.
      * @return mixed
      */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $dataProvider = new ActiveDataProvider([
             'query' => NddOutputMaster::find(),
         ]);
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -50,10 +49,9 @@ class NddOutputMasterController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
-    {
+    public function actionView($id) {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+                    'model' => $this->findModel($id),
         ]);
     }
 
@@ -62,8 +60,7 @@ class NddOutputMasterController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new NddOutputMaster();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -71,7 +68,7 @@ class NddOutputMasterController extends Controller
         }
 
         return $this->render('create', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -82,8 +79,7 @@ class NddOutputMasterController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -91,7 +87,7 @@ class NddOutputMasterController extends Controller
         }
 
         return $this->render('update', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -102,8 +98,7 @@ class NddOutputMasterController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
+    public function actionDelete($id) {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
@@ -116,12 +111,51 @@ class NddOutputMasterController extends Controller
      * @return NddOutputMaster the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = NddOutputMaster::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    public function actionUploadShowrun() {
+        $model = new NddOutputMaster();
+        $fileName = "showrun.txt";
+        $showrunPath = Yii::$app->basePath . "/uploads/showruns/$fileName";
+        $contents = '';
+        if (file_exists($showrunPath)) {
+            $contents = file_get_contents($showrunPath);
+        }
+        $data = [];
+        if (!empty($contents)) {
+            $rows = $model->parseTextFile($contents);
+            foreach ($rows as $key => $value) {
+                if (preg_match("/^sysname/", $rows[$key])) {
+                    $data['host_name'] = BuiltMasterNew::getHostname($rows[$key]);
+                } elseif (preg_match("/^dns server/", $rows[$key]) && !preg_match("/^dns server source-ip /", $rows[$key])) {
+                    $dns_server = BuiltMasterNew::getDnsServer($rows[$key]);
+                    if (isset($data['dns_server']) && !empty($data['dns_server'])) {
+                        $data['dns_server'] .= "," . $dns_server;
+                    } else {
+                        $data['dns_server'] = $dns_server;
+                    }
+                } elseif (preg_match("/^dns server source-ip /", $rows[$key])) {
+                    $dns_server_source_ip = BuiltMasterNew::getDnsServerSourceIp($rows[$key]);
+                    if (isset($data['dns_server_source_ip']) && !empty($data['dns_server_source_ip'])) {
+                        $data['dns_server_source_ip'] .= "," . $dns_server_source_ip;
+                    } else {
+                        $data['dns_server_source_ip'] = $dns_server_source_ip;
+                    }
+                } elseif (preg_match("/^qos-profile/", $rows[$key])) {
+                    $data['policy_name'] = BuiltMasterNew::getDnsServerSourceIp($rows[$key]);
+                    
+                }
+            }
+        }
+        echo "<pre/>";
+        print_r($data);
+        die;
+    }
+
 }

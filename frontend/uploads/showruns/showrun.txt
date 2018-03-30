@@ -1,0 +1,1730 @@
+sysname 22SM-HE1-G000-F01-05
+FTP server enable
+FTP client-source -i LoopBack0
+info-center source LSPM channel 2 log state off  trap state off
+info-center source L2V channel 2 log state off  trap state off
+info-center source LDP channel 2 log state off  trap state off
+info-center source BFD channel 2 log state off  trap state off
+info-center source OSPF channel 2 log state off  trap state off
+info-center source MFLP channel 2 log state off  trap state off
+info-center source SHELL channel 4 log level debugging
+info-center loghost source LoopBack0
+info-center loghost 172.25.4.68
+#
+dns resolve
+dns server 10.112.250.2
+dns server 10.112.248.2
+dns domain ce.local
+dns server source-ip 10.115.4.79
+undo dcn
+loop-detection enable
+clock ethernet-synchronization enable 
+clock freq-deviation-detect enable 
+clock ssm-control on
+undo set power input-power
+
+slot 1
+ active 10GE-Interface
+diffserv domain default
+diffserv domain 5p3d
+service-template template-default0
+service-template template-default1
+service-template template-default2
+service-template template-default3
+service-template template-default4
+#
+l2tp-group default-lac
+ tunnel name HUAWEI
+#
+l2tp-group default-lns
+ tunnel name HUAWEI
+#
+qos-profile 10M_LTE_OPTUS
+ car cir 10000 pir 150000 cbs 937500 pbs 937500 green pass yellow pass red discard
+
+qos-profile Any@100M_GB
+ car cir 100000 pir 100000 cbs 125000 pbs 125000 green pass yellow pass red discard
+
+qos-profile 300M_LTE_OPTUS_TDD_TRIAL
+ car cir 300000 pir 300000 cbs 1875000 pbs 1875000 green pass yellow pass red discard
+
+qos-profile 150M_LTE_OPTUS
+ car cir 10000 pir 150000 cbs 937500 pbs 937500 green pass yellow pass red discard
+
+qos-profile 600M_LTE_OPTUS_TDD_TRIAL
+ car cir 600000 pir 600000 cbs 3750000 pbs 3750000 green pass yellow pass red discard
+hwtacacs-server template ht
+ hwtacacs-server authentication 10.194.228.68
+ hwtacacs-server authentication 10.194.227.68 secondary
+ hwtacacs-server authorization 10.194.228.68
+ hwtacacs-server authorization 10.194.227.68 secondary
+ hwtacacs-server source-ip 10.115.4.79
+ hwtacacs-server shared-key cipher @%@%H6s=-gOB2Btv3}(S{,BI9([p@%@%
+ undo hwtacacs-server user-name domain-included
+#
+aaa 
+ local-user local password irreversible-cipher $1a$<LX^@!o=%F$n5Mz3,9Q3E@@@.-^8D5&+%2K$njL6Jy1I*1'@:-M$
+ local-user local service-type ftp terminal ssh 
+ local-user local state block fail-times 3 interval 5
+ local-user local ftp-directory cfcard: 
+ local-user operations password simple ftp
+ local-user operations service-type ftp 
+ local-user operations state block fail-times 3 interval 5
+ local-user operations ftp-directory cfcard: 
+ local-user u2000 password irreversible-cipher $1a$)=K}MD{GDK$F*&F2c\E(,XVY!ToERi2=^Fm2b<J<RwKl9>xj`Q;$
+ local-user u2000 service-type ftp terminal ssh 
+ local-user u2000 level 3 
+ local-user u2000 state block fail-times 3 interval 5
+ local-user u2000 ftp-directory cfcard: 
+ authentication-scheme default0
+ authentication-scheme default1
+ authentication-scheme default
+  authentication-mode local radius
+ authentication-scheme l-h
+  authentication-mode hwtacacs local
+  authentication-super hwtacacs
+ #
+ authorization-scheme default
+ authorization-scheme hwtacacs
+  authorization-mode hwtacacs none
+  authorization-cmd 0 hwtacacs 
+  authorization-cmd 1 hwtacacs 
+  authorization-cmd 2 hwtacacs 
+ #
+ accounting-scheme default0 
+ accounting-scheme default1 
+ #
+ domain default0 
+ domain default1 
+ domain default_admin  
+  authentication-scheme l-h 
+  authorization-scheme hwtacacs
+  hwtacacs-server ht 
+ #
+#
+bfd
+ mpls-passive
+mpls lsr-id 10.115.4.79
+mpls
+#
+mpls l2vpn
+mpls ldp
+ remote-peer pwe3
+ graceful-restart
+#
+mpls ldp remote-peer 22bj-he1-g005-f20-42
+ remote-ip 10.115.8.35
+#
+mpls ldp remote-peer 22bj-hef-g005-f17-02
+ remote-ip 10.115.32.18
+#
+mpls ldp remote-peer 22bj-hef-g005-f18-02
+ remote-ip 10.115.32.17
+#
+mpls ldp remote-peer 22bt-are-0110-f10-03
+ remote-ip 10.197.255.1
+#
+mpls ldp remote-peer 22bt-are-0110-f12-03
+ remote-ip 10.197.255.2
+#
+mpls ldp remote-peer 22bt-asx-0117-r08-30
+ remote-ip 10.197.200.2
+#
+mpls ldp remote-peer 22bt-asx-0117-r08-33
+ remote-ip 10.197.200.1
+#
+mpls ldp remote-peer 22bt-he1-0118-f13-42
+ remote-ip 10.115.4.35
+#
+mpls ldp remote-peer 22bt-he8-0110-f13-02
+ remote-ip 10.115.4.129
+#
+mpls ldp remote-peer 22bt-he8-0121-f09-02
+ remote-ip 10.115.4.65
+#
+mpls ldp remote-peer 22bt-he8-0121-f10-02
+ remote-ip 10.115.4.66
+#
+mpls ldp remote-peer 22bt-hef-0110-f11-02
+ remote-ip 10.115.32.29
+#
+mpls ldp remote-peer 22bt-hef-0118-f14-02
+ remote-ip 10.115.32.30
+#
+mpls ldp remote-peer 22bt-hef-0120-f06-02
+ remote-ip 10.115.32.1
+#
+mpls ldp remote-peer 22bt-hef-0120-f07-02
+ remote-ip 10.115.32.2
+#
+mpls ldp remote-peer 22rr-hef-g0af-f09-02
+ remote-ip 10.115.32.3
+#
+mpls ldp remote-peer 22rr-hef-g0af-f10-02
+ remote-ip 10.115.32.4
+#
+mpls ldp remote-peer 22rr-hef-g0bz-r04-02
+ remote-ip 10.115.32.25
+#
+mpls ldp remote-peer 22rr-hef-g0bz-r06-02
+ remote-ip 10.115.32.26
+#
+mpls ldp remote-peer 62hl-he1-0600-f01-01
+ remote-ip 10.115.6.68
+#
+vsi CPE_Management_22SM_2NHW static
+ description CPE_Management_22BT
+ pwsignal ldp
+  vsi-id 4392
+  peer 10.115.32.2 tnl-policy Load_Balance
+  peer 10.115.32.1 tnl-policy Load_Balance
+ encapsulation ethernet
+ diffserv-mode pipe cs6 green
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/3
+ description 22SM_S2WE_EBC001_VNX_CO1462267
+ undo shutdown
+ mode user-termination
+ undo dcn 
+#
+interface GigabitEthernet1/2/3.4088
+ description 22SM_S2WE_EBC001_VNX_CO1462267
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/2/4.4088
+ description HUAWEI, 22SM 2NHW EBC001 1365130
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/2/5.4088
+ description 22SM 22SM EBC001 1481044
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/3/2.4088
+ description 22SM_S2RH_EBC001_VNX_CO1462186
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/3/3.4088
+ description HUAWEI 22SM 32YJ EBC001 EO1481025
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+interface GigabitEthernet1/5/4.4088
+ description HUAWEI 22SM 22SM EBC002 EO1604711
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/5/5.4088
+ description huawei 22SM 22SM EBC003 EO1604711
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/5/6.4088
+ description HUAWEI 22SM 22SM  EBC004 EO1604711
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+vsi VSI_2567 static
+ description MOB_22BT_2NHW_3G0001_VSI
+ pwsignal ldp
+  vsi-id 2567
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+  peer 10.115.4.35 tnl-policy Load_Balance
+ encapsulation ethernet
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/4.2029
+ description 22SM 2NHW EBC001 1365130
+ control-vid 2029 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 3005 ce-vid 2029 vlan-group 1
+ l2 binding vsi VSI_2567
+ loop-detect enable 
+ loop-detect block 
+ trust upstream default
+ trust 8021p
+#
+vsi VSI_16331 static
+ description MOB_22BT_32YJ_IPA001_VSI
+ pwsignal ldp
+  vsi-id 16331
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ encapsulation ethernet
+#
+#
+interface GigabitEthernet1/3/3.1114
+ description MOB_22BT_32YJ_IPA001_VSI 1484320
+ control-vid 1114 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 1114 vlan-group 1
+ l2 binding vsi VSI_16331
+#
+
+#
+vsi VSI_1836 static
+ description MOB_22BT_22SM_IPA003_ERICSSON_VSI
+ pwsignal ldp
+  vsi-id 1836
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/5.1119
+ description 22SM 22SM EBC001 1481044
+ control-vid 1119 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 1119 vlan-group 1
+ l2 binding vsi VSI_1836
+ trust upstream default
+ trust 8021p
+#
+
+#
+vsi VSI_1838 static
+ description MOB_22BT_22SM_IPA004_ERICSSON_VSI
+ pwsignal ldp
+  vsi-id 1838
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/5.1120
+ description 22SM 22SM EBC001 1481044
+ control-vid 1120 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 1120 vlan-group 1
+ l2 binding vsi VSI_1838
+ trust upstream default
+ trust 8021p
+#
+
+#
+vsi VSI_1869 static
+ description MOB_22BT_22SM_IPA005_ERICSSON_VSI
+ pwsignal ldp
+  vsi-id 1869
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/5.1121
+ description 22SM 22SM EBC001 1481044
+ control-vid 1121 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 1121 vlan-group 1
+ l2 binding vsi VSI_1869
+ trust upstream default
+ trust 8021p
+#
+
+#
+vsi BGV_O2VO_S2RH_VSI003_VNX static
+ description BGV_O2VO_S2RH_VSI003_VNX_CO1579223
+ pwsignal ldp
+  vsi-id 5713
+  peer 10.115.32.17 tnl-policy Load_Balance
+  peer 10.115.32.18 tnl-policy Load_Balance
+ diffserv-mode pipe ef green
+ isolate spoken
+#
+#
+interface GigabitEthernet1/3/2.501
+ description BGV_O2VO_S2RH_VSI003_VNX_CO1579223
+ set flow-stat interval 30
+ control-vid 501 qinq-termination
+ qinq termination l2 symmetry
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 501 ce-vid 3198 vlan-group 1
+ l2 binding vsi BGV_O2VO_S2RH_VSI003_VNX
+#
+#
+vsi BGV_O2VO_S2WE_VSI003_VNX static
+ description BGV_O2VO_S2WE_VSI003_VNX_CO1492618
+ pwsignal ldp
+  vsi-id 6054
+  peer 10.115.32.17 tnl-policy Load_Balance
+  peer 10.115.32.18 tnl-policy Load_Balance
+ diffserv-mode pipe ef green
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/3.501
+ description BGV_O2VO_S2WE_VSI003_VNX_CO1492618
+ set flow-stat interval 30
+ control-vid 501 qinq-termination
+ qinq termination l2 symmetry
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 501 ce-vid 2143 vlan-group 1
+ l2 binding vsi BGV_O2VO_S2WE_VSI003_VNX
+#
+
+#
+vsi VSI_3645 static
+ description MOB_22BT_S2RH_IPA001_VSI_1
+ pwsignal ldp
+  vsi-id 3645
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+  peer 10.115.4.35 tnl-policy Load_Balance
+ encapsulation ethernet
+ isolate spoken
+#
+#
+interface GigabitEthernet1/3/2.3096
+ description 22SM_S2RH_EBC001_VNX_CO1462186
+ control-vid 3096 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 3093 ce-vid 3096 vlan-group 1
+ l2 binding vsi VSI_3645
+ loop-detect enable 
+ loop-detect block 
+ trust upstream default
+ trust 8021p
+#
+
+#
+vsi BGV_22SM_O2VO_VSI005_VNX static
+ description BGV_22SM_O2VO_VSI005_VNX_CO1655606
+ pwsignal ldp
+  vsi-id 36814
+  peer 10.115.32.17 tnl-policy Load_Balance
+  peer 10.115.32.18 tnl-policy Load_Balance
+ diffserv-mode pipe ef green
+ isolate spoken
+#
+#
+interface GigabitEthernet1/5/4.502
+ description BGV_22SM_O2VO_VSI005_VNX_CO1655606
+ set flow-stat interval 30
+ control-vid 502 qinq-termination
+ qinq termination l2 symmetry
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 502 ce-vid 2649 vlan-group 1
+ l2 binding vsi BGV_22SM_O2VO_VSI005_VNX
+#
+
+#
+vsi VSI_1912 static
+ description MOB_22BT_32YN_IPA001_VSI_1
+ pwsignal ldp
+  vsi-id 1912
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1
+ isolate spoken
+#
+
+#
+vsi VSI_1748 static
+ description MOB_22BJ_S2WE_IPA001_VSI1
+ pwsignal ldp
+  vsi-id 1748
+  peer 10.115.32.17 tnl-policy Load_Balance
+  peer 10.115.32.18 tnl-policy Load_Balance
+  peer 10.115.8.35 tnl-policy Load_Balance
+ encapsulation ethernet
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/3.3108
+ description 22SM_S2WE_EBC001_VNX_CO1462267
+ control-vid 3108 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 3101 ce-vid 3108 vlan-group 1
+ l2 binding vsi VSI_1748
+ loop-detect enable 
+ loop-detect block 
+ trust upstream default
+ trust 8021p
+#
+#
+vsi VSI_8241 static
+ description MOB_22BT_32YJ_IPA004_VSI
+ pwsignal ldp
+  vsi-id 8241
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1
+ isolate spoken
+#
+#
+interface GigabitEthernet1/3/3.1165
+ description 22SM 32YJ EBC001 EO1481025
+ control-vid 1165 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 1165 vlan-group 1
+ l2 binding vsi VSI_8241
+ trust upstream default
+ trust 8021p
+#
+
+#
+vsi VSI_6467 static
+ description MOB_22BT_32YN_3G0001_VSI
+ pwsignal ldp
+  vsi-id 6467
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+  peer 10.115.4.35 tnl-policy Load_Balance
+ encapsulation ethernet
+ isolate spoken
+#
+
+#
+vsi BGV_32YN_O2VO_VSI003_VNX static
+ description BGV_32YN_O2VO_VSI003_VNX_CO1557772
+ pwsignal ldp
+  vsi-id 11074
+  peer 10.115.32.17 tnl-policy Load_Balance
+  peer 10.115.32.18 tnl-policy Load_Balance
+ diffserv-mode pipe ef green
+ isolate spoken
+#
+
+#
+vsi BGV_21XU_S2RH_VSI005_VNX static
+ description BGV_21XU_S2RH_VSI005_VNX_CO1579233
+ pwsignal ldp
+  vsi-id 12263
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ diffserv-mode pipe ef green
+ isolate spoken
+#
+#
+interface GigabitEthernet1/3/2.502
+ description BGV_21XU_S2RH_VSI005_VNX_CO1579233
+ set flow-stat interval 30
+ control-vid 502 qinq-termination
+ qinq termination l2 symmetry
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 502 ce-vid 3870 vlan-group 1
+ l2 binding vsi BGV_21XU_S2RH_VSI005_VNX
+#
+#
+vsi VSI_14946 static
+ description MOB_22BT_S2RH_LTE0001_VSI
+ pwsignal ldp
+  vsi-id 14946
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+#
+interface GigabitEthernet1/3/2.2084
+ description MOB_22BT_S2RH_LTE0001_VSI
+ control-vid 2084 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 2084 vlan-group 1
+ l2 binding vsi VSI_14946
+ trust upstream default
+ trust 8021p
+#
+
+#
+vsi VSI_14958 static
+ description MOB_22BT_S2RH_LTE0002_VSI
+ pwsignal ldp
+  vsi-id 14958
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+#
+interface GigabitEthernet1/3/2.2085
+ description MOB_22BT_S2RH_LTE0002_VSI
+ control-vid 2085 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 2085 vlan-group 1
+ l2 binding vsi VSI_14958
+ trust upstream default
+ trust 8021p
+#
+
+#
+vsi VSI_15781 static
+ description MOB_22BT_S2RH_3G0001_VSI
+ pwsignal ldp
+  vsi-id 15781
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+  peer 10.115.4.35 tnl-policy Load_Balance
+ encapsulation ethernet
+ isolate spoken
+#
+#
+interface GigabitEthernet1/3/2.3254
+ description MOB_22BT_S2RH_3G0001_VSI
+ control-vid 3254 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 3093 ce-vid 3254 vlan-group 1
+ l2 binding vsi VSI_15781
+ loop-detect enable 
+ loop-detect block 
+ trust upstream default
+ trust 8021p
+#
+#
+vsi BGV_21XU_32YN_VSI005_VNX static
+ description BGV_21XU_32YN_VSI005_VNX_CO1574647
+ pwsignal ldp
+  vsi-id 15892
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ diffserv-mode pipe ef green
+ isolate spoken
+#
+
+#
+vsi BGV_32YJ_O2VO_VSI005_VNX static
+ description BGV_32YJ_O2VO_VSI005_VNX_CO1598112
+ pwsignal ldp
+  vsi-id 2283
+  peer 10.115.32.17 tnl-policy Load_Balance
+  peer 10.115.32.18 tnl-policy Load_Balance
+ diffserv-mode pipe ef green
+ isolate spoken
+#
+#
+interface GigabitEthernet1/3/3.502
+ description BGV_32YJ_O2VO_VSI005_VNX_CO1598112
+ set flow-stat interval 30
+ control-vid 502 qinq-termination
+ qinq termination l2 symmetry
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 502 ce-vid 2635 vlan-group 1
+ l2 binding vsi BGV_32YJ_O2VO_VSI005_VNX
+#
+#
+vsi VSI_17472 static
+ description MOB_22BT_2NHW_LTE0001_VSI_1
+ pwsignal ldp
+  vsi-id 17472
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/4.2454
+ description MOB_22BT_2NHW_LTE0001_VSI_1
+ set flow-stat interval 10
+ control-vid 2454 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 2002 ce-vid 2454 vlan-group 1
+ l2 binding vsi VSI_17472
+ trust upstream default
+ trust 8021p
+#
+#
+vsi VSI_18756 static
+ description MOB_22BT_32YN_IPA007_VSI
+ pwsignal ldp
+  vsi-id 18756
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+  peer 10.115.4.35 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+
+#
+vsi VSI_20052 static
+ description MOB_22RR_22SM_LTE0006_VSI
+ pwsignal ldp
+  vsi-id 20052
+  peer 10.115.32.3 tnl-policy Load_Balance
+  peer 10.115.32.4 tnl-policy Load_Balance
+ encapsulation ethernet
+#
+#
+interface GigabitEthernet1/5/6.2581
+ description 22SM 22SM  EBC004 EO1604711
+ control-vid 2581 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2051 ce-vid 2581 vlan-group 1
+ l2 binding vsi VSI_20052
+#
+#
+vsi VSI_20851 static
+ description MOB_22RR_22SM_LTE0004_VSI
+ pwsignal ldp
+  vsi-id 20581
+  peer 10.115.32.25 tnl-policy Load_Balance
+  peer 10.115.32.26 tnl-policy Load_Balance
+ encapsulation ethernet
+#
+
+#
+vsi VSI_21065 static
+ description MOB_22RR_22SM_LTE0006_159675_VSI
+ pwsignal ldp
+  vsi-id 21065
+  peer 10.115.32.25 tnl-policy Load_Balance
+  peer 10.115.32.26 tnl-policy Load_Balance
+ encapsulation ethernet
+#
+#
+interface GigabitEthernet1/5/6.112
+ description 22SM 22SM  EBC004 EO1604711
+ control-vid 112 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2052 ce-vid 112 vlan-group 1
+ l2 binding vsi VSI_21065
+#
+#
+vsi VSI_27698 static
+ description MOB_22BT_S2WE_LTE0002_VSI
+ pwsignal ldp
+  vsi-id 27698
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/3.309
+ description MOB_22BT_S2WE_LTE0002_VSI
+ set flow-stat interval 10
+ control-vid 309 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 2002 ce-vid 309 vlan-group 1
+ l2 binding vsi VSI_27698
+ trust upstream default
+ trust 8021p
+#
+#
+vsi VSI_28120 static
+ description MOB_22BT_S2WE_LTE0001_VSI
+ pwsignal ldp
+  vsi-id 28120
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/3.325
+ description MOB_22BT_S2WE_LTE0001_VSI
+ set flow-stat interval 10
+ control-vid 325 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 2002 ce-vid 325 vlan-group 1
+ l2 binding vsi VSI_28120
+ trust upstream default
+ trust 8021p
+#
+#
+vsi BGV_2NHW_O2VO_VSI005_VNX static
+ description BGV_2NHW_O2VO_VSI005_VHF_CO5090689
+ pwsignal ldp
+  vsi-id 13503
+  peer 10.115.32.17 tnl-policy Load_Balance
+  peer 10.115.32.18 tnl-policy Load_Balance
+#
+#
+interface GigabitEthernet1/2/4.502
+ description BGV_2NHW_O2VO_VSI005_VHF_CO1642576
+ set flow-stat interval 30
+ control-vid 502 qinq-termination
+ qinq termination l2 symmetry
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 502 ce-vid 2750 vlan-group 1
+ l2 binding vsi BGV_2NHW_O2VO_VSI005_VNX
+#
+#
+vsi VSI_13579 static
+ description MOB_22BT_2NHW_3G0002_VSI
+ pwsignal ldp
+  vsi-id 13579
+  peer 10.115.32.29 tnl-policy Load_Balance
+  peer 10.115.32.30 tnl-policy Load_Balance
+  peer 10.115.4.35 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/4.3395
+ description MOB_22BT_2NHW_3G0002
+ set flow-stat interval 10
+ control-vid 3395 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 3002 ce-vid 3395 vlan-group 1
+ l2 binding vsi VSI_13579
+ trust upstream default
+ trust 8021p
+#
+
+#
+vsi BGV_2NHW_O2VO_VSI005_VHF
+ diffserv-mode pipe ef green
+#
+#
+vsi VSI_13885 static
+ description MOB_22BT_2NHW_LTE0002_VSI
+ pwsignal ldp
+  vsi-id 13885
+  peer 10.115.32.1 tnl-policy Load_Balance
+  peer 10.115.32.2 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/4.361
+ description MOB_22BT_2NHW_LTE0002
+ set flow-stat interval 10
+ control-vid 2002 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 2002 ce-vid 361 vlan-group 1
+ l2 binding vsi VSI_13885
+ trust upstream default
+ trust 8021p
+#
+#
+vsi VSI_14678 static
+ description MOB_22BJ_S2WE_3G0001_VSI_1
+ pwsignal ldp
+  vsi-id 14678
+  peer 10.115.32.17 tnl-policy Load_Balance
+  peer 10.115.32.18 tnl-policy Load_Balance
+  peer 10.115.8.35 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/3.3848
+ description MOB_22BJ_S2WE_3G0001_VSI_1
+ set flow-stat interval 10
+ control-vid 3848 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 3002 ce-vid 3848 vlan-group 1
+ l2 binding vsi VSI_14678
+ trust upstream default
+ trust 8021p
+#
+
+#
+vsi VSI_17672 static
+ description MOB_22RR_22SM_LTE0003
+ pwsignal ldp
+  vsi-id 17672
+  peer 10.115.32.3 tnl-policy Load_Balance
+  peer 10.115.32.4 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/5.526
+ description 22SM_22SM_EBC001_VNX_CO1481044
+ control-vid 526 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2051 ce-vid 526 vlan-group 1
+ l2 binding vsi VSI_17672
+#
+#
+vsi VSI_17710 static
+ description MOB_22RR_32YN_LTE0002_VSI
+ pwsignal ldp
+  vsi-id 17710
+  peer 10.115.32.3 tnl-policy Load_Balance
+  peer 10.115.32.4 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+
+#
+vsi VSI_18970 static
+ description MOB_22RR_22SM_LTE0004_VSI_1
+ pwsignal ldp
+  vsi-id 18970
+  peer 10.115.32.3 tnl-policy Load_Balance
+  peer 10.115.32.4 tnl-policy Load_Balance
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+#
+interface GigabitEthernet1/5/6.548
+ description MOB_22RR_22SM_LTE0004_VSI
+ set flow-stat interval 10
+ control-vid 548 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 2051 ce-vid 548 vlan-group 1
+ l2 binding vsi VSI_18970
+ trust upstream default
+ trust 8021p
+#
+#
+vsi VSI_35252 static
+ description MOB_22BT_22SM_3G0001
+ pwsignal ldp
+  vsi-id 35252
+  peer 10.197.200.1 tnl-policy Load_Balance
+  peer 10.197.200.2 tnl-policy Load_Balance
+  peer 10.197.255.1 tnl-policy Load_Balance
+  peer 10.197.255.2 tnl-policy Load_Balance
+ mtu 2000
+ encapsulation ethernet
+ loop-detect eth-loop loop-times 7 detect-cycle 3 cycles 1 retry-times 1 block-time 240
+ isolate spoken
+#
+#
+interface GigabitEthernet1/2/5.1303
+ description 22SM_22SM_EBC001_VNX_CO1481044
+ set flow-stat interval 10
+ mtu 2000
+ control-vid 1303 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 3002 ce-vid 1303 vlan-group 1
+ l2 binding vsi VSI_35252
+ trust upstream default
+ trust 8021p
+#
+Multicast bandwidth
+ntp-service source-interface LoopBack0
+ntp-service unicast-server 10.112.248.1
+ntp-service unicast-server 10.112.250.1 preference
+#
+#
+interface Eth-Trunk1
+ description CE_Huawei_NTU : 32YN-HC1-G000-F01-01 & Eth-trunk1 : EO5635446 : 22SM 32YN LAG001
+ ip address 10.114.22.16 255.255.255.254
+ ospf cost 1000
+ ospf authentication-mode md5 1 cipher @%@%ED7u@dN'%*O/RcMn=R=&$,/X@%@%
+ ospf network-type p2p
+ ospf ldp-sync
+ ospf timer ldp-sync hold-max-cost infinite
+ mpls
+ mpls ldp
+ mpls ldp timer igp-sync-delay 180
+ mode lacp-static
+ lacp timeout fast
+ max active-linknumber 1
+ trust upstream default
+#
+#
+interface Eth-Trunk2
+ description 22SM 2SRG LAG001 EO1855482
+ mode user-termination
+ mode lacp-static
+ lacp timeout fast
+ max active-linknumber 1
+#
+interface Eth-Trunk2.100
+ description 22SM 2SRG LAG001 EO1855482
+ control-vid 100 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 100 vlan-group 1
+ ip address 10.114.22.66 255.255.255.254
+ ospf cost 1000
+ ospf network-type p2p
+ ospf ldp-sync
+ ospf timer ldp-sync hold-max-cost infinite
+ mpls
+ mpls ldp
+ mpls ldp timer igp-sync-delay 180
+ trust upstream default
+#
+#
+interface Eth-Trunk10
+ description 22SM S2NF LAG001 EO3762778
+ mode user-termination
+ mode lacp-static
+ lacp timeout fast
+ max active-linknumber 1
+#
+interface Eth-Trunk10.100
+ description 22SM S2NF EBCS001 EO3762778
+ control-vid 100 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 100 vlan-group 1
+ ip address 10.114.22.96 255.255.255.254
+ ospf cost 1000
+ ospf network-type p2p
+ mpls
+ mpls ldp
+ trust upstream default
+#
+#
+interface Eth-Trunk11
+ description 22SM S2SM LAG001 EO4967420
+ mode user-termination
+ mode lacp-static
+ lacp timeout fast
+ max active-linknumber 1
+#
+interface Eth-Trunk11.100
+ description 22SM S2SM EBCS001 EO4967420
+ control-vid 100 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 100 vlan-group 1
+ ip address 10.114.22.116 255.255.255.254
+ ospf cost 1000
+ ospf network-type p2p
+ mpls
+ mpls ldp
+ trust upstream default
+#
+
+#
+interface GigabitEthernet1/0/0
+ trap-threshold input-rate 40
+ trap-threshold output-rate 40
+ description 22BT 22SM EBD001 EO4999606
+ undo shutdown
+ ip address 10.114.17.61 255.255.255.254
+ ospf cost 100
+ ospf network-type p2p
+ ospf timer hello 4
+ ospf timer dead 17
+ ospf ldp-sync
+ ospf timer ldp-sync hold-max-cost 1800
+ mpls
+ mpls ldp
+ undo dcn 
+ trust upstream default
+ clock priority 1 
+ clock synchronization enable
+#
+#
+interface GigabitEthernet1/0/1
+ trap-threshold input-rate 40
+ trap-threshold output-rate 40
+ description 22BT 22SM EBD002 EO4999606
+ undo shutdown
+ ip address 10.114.17.63 255.255.255.254
+ ospf cost 100
+ ospf network-type p2p
+ ospf timer hello 4
+ ospf timer dead 17
+ ospf ldp-sync
+ ospf timer ldp-sync hold-max-cost 1800
+ mpls
+ mpls ldp
+ undo dcn 
+ trust upstream default
+ clock priority 2 
+ clock synchronization enable
+#
+#
+interface GigabitEthernet1/2/0
+ port-type fiber-1000
+ description 22SM 22SM BIE05 EBC001 1482386
+ undo shutdown
+ mode user-termination
+ undo dcn 
+#
+#
+interface GigabitEthernet1/2/1
+ description CE_Huawei_NTU : 32YN-HC1-G000-F01-01 & 0/2/4 : EO5635446 : 22SM 32YN EBDS001
+ undo shutdown
+ eth-trunk 1
+ undo dcn 
+ clock synchronization enable
+#
+#
+interface GigabitEthernet1/2/2
+ description 22SM S2SM EBCS001 EO4967420
+ undo shutdown
+ eth-trunk 11
+ undo dcn 
+ clock synchronization enable
+#
+#
+interface GigabitEthernet1/2/3
+ description 22SM_S2WE_EBC001_VNX_CO1462267
+ undo shutdown
+ mode user-termination
+ undo dcn 
+#
+interface GigabitEthernet1/2/3.309
+ description MOB_22BT_S2WE_LTE0002_VSI
+ set flow-stat interval 10
+ control-vid 309 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 2002 ce-vid 309 vlan-group 1
+ l2 binding vsi VSI_27698
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/2/3.325
+ description MOB_22BT_S2WE_LTE0001_VSI
+ set flow-stat interval 10
+ control-vid 325 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 2002 ce-vid 325 vlan-group 1
+ l2 binding vsi VSI_28120
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/2/3.501
+ description BGV_O2VO_S2WE_VSI003_VNX_CO1492618
+ set flow-stat interval 30
+ control-vid 501 qinq-termination
+ qinq termination l2 symmetry
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 501 ce-vid 2143 vlan-group 1
+ l2 binding vsi BGV_O2VO_S2WE_VSI003_VNX
+#
+interface GigabitEthernet1/2/3.3108
+ description 22SM_S2WE_EBC001_VNX_CO1462267
+ control-vid 3108 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 3101 ce-vid 3108 vlan-group 1
+ l2 binding vsi VSI_1748
+ loop-detect enable 
+ loop-detect block 
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/2/3.3848
+ description MOB_22BJ_S2WE_3G0001_VSI_1
+ set flow-stat interval 10
+ control-vid 3848 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 3002 ce-vid 3848 vlan-group 1
+ l2 binding vsi VSI_14678
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/2/3.4088
+ description 22SM_S2WE_EBC001_VNX_CO1462267
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/2/4
+ description 22SM 2NHW EBC001 1365130
+ undo shutdown
+ mode user-termination
+ undo dcn 
+#
+interface GigabitEthernet1/2/4.361
+ description MOB_22BT_2NHW_LTE0002
+ set flow-stat interval 10
+ control-vid 2002 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 2002 ce-vid 361 vlan-group 1
+ l2 binding vsi VSI_13885
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/2/4.502
+ description BGV_2NHW_O2VO_VSI005_VHF_CO1642576
+ set flow-stat interval 30
+ control-vid 502 qinq-termination
+ qinq termination l2 symmetry
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 502 ce-vid 2750 vlan-group 1
+ l2 binding vsi BGV_2NHW_O2VO_VSI005_VNX
+#
+interface GigabitEthernet1/2/4.2029
+ description 22SM 2NHW EBC001 1365130
+ control-vid 2029 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 3005 ce-vid 2029 vlan-group 1
+ l2 binding vsi VSI_2567
+ loop-detect enable 
+ loop-detect block 
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/2/4.2454
+ description MOB_22BT_2NHW_LTE0001_VSI_1
+ set flow-stat interval 10
+ control-vid 2454 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 2002 ce-vid 2454 vlan-group 1
+ l2 binding vsi VSI_17472
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/2/4.3395
+ description MOB_22BT_2NHW_3G0002
+ set flow-stat interval 10
+ control-vid 3395 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 3002 ce-vid 3395 vlan-group 1
+ l2 binding vsi VSI_13579
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/2/4.4088
+ description HUAWEI, 22SM 2NHW EBC001 1365130
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/2/5
+ description 22SM_22SM_EBC001_VNX_CO1481044
+ undo shutdown
+ mode user-termination
+ undo dcn 
+#
+interface GigabitEthernet1/2/5.526
+ description 22SM_22SM_EBC001_VNX_CO1481044
+ control-vid 526 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2051 ce-vid 526 vlan-group 1
+ l2 binding vsi VSI_17672
+#
+interface GigabitEthernet1/2/5.1119
+ description 22SM 22SM EBC001 1481044
+ control-vid 1119 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 1119 vlan-group 1
+ l2 binding vsi VSI_1836
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/2/5.1120
+ description 22SM 22SM EBC001 1481044
+ control-vid 1120 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 1120 vlan-group 1
+ l2 binding vsi VSI_1838
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/2/5.1121
+ description 22SM 22SM EBC001 1481044
+ control-vid 1121 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 1121 vlan-group 1
+ l2 binding vsi VSI_1869
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/2/5.1303
+ description 22SM_22SM_EBC001_VNX_CO1481044
+ set flow-stat interval 10
+ mtu 2000
+ control-vid 1303 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 3002 ce-vid 1303 vlan-group 1
+ l2 binding vsi VSI_35252
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/2/5.4088
+ description 22SM 22SM EBC001 1481044
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/2/6
+ description 22SM 2SRG EBCS001 EO1911876
+ undo shutdown
+ eth-trunk 2
+ undo dcn 
+ clock synchronization enable
+#
+#
+interface GigabitEthernet1/2/7
+ description 22SM 22SM BIE04 EBC004 1599094
+ undo shutdown
+ mode user-termination
+ undo dcn 
+ clock synchronization enable
+#
+interface GigabitEthernet1/2/7.114
+ description MOB_22RR_22SM_LTE0004_VSI
+ control-vid 114 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 114 vlan-group 1
+ l2 binding vsi VSI_20851
+#
+#
+interface GigabitEthernet1/3/0
+ description HUAWEI, Quidway Series, GigabitEthernet1/2/2 Interface
+ shutdown
+ mode user-termination
+ undo dcn 
+#
+#
+interface GigabitEthernet1/3/1
+ description 22SM 22SM EBC005
+ undo shutdown
+ mode user-termination
+ undo dcn 
+#
+#
+interface GigabitEthernet1/3/2
+ description 22SM_S2RH_EBC001_VNX_CO1462186
+ undo shutdown
+ mode user-termination
+ undo dcn 
+#
+interface GigabitEthernet1/3/2.501
+ description BGV_O2VO_S2RH_VSI003_VNX_CO1579223
+ set flow-stat interval 30
+ control-vid 501 qinq-termination
+ qinq termination l2 symmetry
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 501 ce-vid 3198 vlan-group 1
+ l2 binding vsi BGV_O2VO_S2RH_VSI003_VNX
+#
+interface GigabitEthernet1/3/2.502
+ description BGV_21XU_S2RH_VSI005_VNX_CO1579233
+ set flow-stat interval 30
+ control-vid 502 qinq-termination
+ qinq termination l2 symmetry
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 502 ce-vid 3870 vlan-group 1
+ l2 binding vsi BGV_21XU_S2RH_VSI005_VNX
+#
+interface GigabitEthernet1/3/2.2084
+ description MOB_22BT_S2RH_LTE0001_VSI
+ control-vid 2084 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 2084 vlan-group 1
+ l2 binding vsi VSI_14946
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/3/2.2085
+ description MOB_22BT_S2RH_LTE0002_VSI
+ control-vid 2085 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 2085 vlan-group 1
+ l2 binding vsi VSI_14958
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/3/2.3096
+ description 22SM_S2RH_EBC001_VNX_CO1462186
+ control-vid 3096 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 3093 ce-vid 3096 vlan-group 1
+ l2 binding vsi VSI_3645
+ loop-detect enable 
+ loop-detect block 
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/3/2.3254
+ description MOB_22BT_S2RH_3G0001_VSI
+ control-vid 3254 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 3093 ce-vid 3254 vlan-group 1
+ l2 binding vsi VSI_15781
+ loop-detect enable 
+ loop-detect block 
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/3/2.4088
+ description 22SM_S2RH_EBC001_VNX_CO1462186
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/3/3
+ description 22SM 32YJ EBC001 EO1481025
+ undo shutdown
+ mode user-termination
+ undo dcn 
+#
+interface GigabitEthernet1/3/3.502
+ description BGV_32YJ_O2VO_VSI005_VNX_CO1598112
+ set flow-stat interval 30
+ control-vid 502 qinq-termination
+ qinq termination l2 symmetry
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 502 ce-vid 2635 vlan-group 1
+ l2 binding vsi BGV_32YJ_O2VO_VSI005_VNX
+#
+interface GigabitEthernet1/3/3.1114
+ description MOB_22BT_32YJ_IPA001_VSI 1484320
+ control-vid 1114 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 1114 vlan-group 1
+ l2 binding vsi VSI_16331
+#
+interface GigabitEthernet1/3/3.1165
+ description 22SM 32YJ EBC001 EO1481025
+ control-vid 1165 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2002 ce-vid 1165 vlan-group 1
+ l2 binding vsi VSI_8241
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/3/3.4088
+ description HUAWEI 22SM 32YJ EBC001 EO1481025
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/3/4
+ description 22SM S2NF EBCS001 EO3762778
+ undo shutdown
+ eth-trunk 10
+ undo dcn 
+ clock synchronization enable
+#
+#
+interface GigabitEthernet1/3/5
+ description 22SM 22SM BIE04 EBC002 1489669
+ undo shutdown
+ mode user-termination
+ undo dcn 
+ clock synchronization enable
+#
+#
+interface GigabitEthernet1/3/6
+ description 22SM 22SM BIE04 EBC003 1489669
+ undo shutdown
+ mode user-termination
+ undo dcn 
+#
+#
+interface GigabitEthernet1/3/7
+ port-type copper
+ description 22SM 22SM BIE08 EBC001 1596834
+ undo shutdown
+ mode user-termination
+ undo dcn 
+ clock synchronization enable
+#
+#
+interface GigabitEthernet1/5/4
+ description 22SM 22SM EBC002 EO1604711
+ undo shutdown
+ mode user-termination
+ undo dcn 
+#
+interface GigabitEthernet1/5/4.502
+ description BGV_22SM_O2VO_VSI005_VNX_CO1655606
+ set flow-stat interval 30
+ control-vid 502 qinq-termination
+ qinq termination l2 symmetry
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 502 ce-vid 2649 vlan-group 1
+ l2 binding vsi BGV_22SM_O2VO_VSI005_VNX
+#
+interface GigabitEthernet1/5/4.4088
+ description HUAWEI 22SM 22SM EBC002 EO1604711
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/5/5
+ description 22SM 22SM EBC003 EO1604711
+ undo shutdown
+ mode user-termination
+ undo dcn 
+#
+interface GigabitEthernet1/5/5.4088
+ description huawei 22SM 22SM EBC003 EO1604711
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface GigabitEthernet1/5/6
+ description 22SM 22SM  EBC004 EO1604711
+ undo shutdown
+ mode user-termination
+ undo dcn 
+ clock synchronization enable
+#
+interface GigabitEthernet1/5/6.112
+ description 22SM 22SM  EBC004 EO1604711
+ control-vid 112 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2052 ce-vid 112 vlan-group 1
+ l2 binding vsi VSI_21065
+#
+interface GigabitEthernet1/5/6.548
+ description MOB_22RR_22SM_LTE0004_VSI
+ set flow-stat interval 10
+ control-vid 548 qinq-termination
+ vlan-group 1
+  statistic enable
+ qinq termination pe-vid 2051 ce-vid 548 vlan-group 1
+ l2 binding vsi VSI_18970
+ trust upstream default
+ trust 8021p
+#
+interface GigabitEthernet1/5/6.2581
+ description 22SM 22SM  EBC004 EO1604711
+ control-vid 2581 qinq-termination
+ vlan-group 1
+ qinq termination pe-vid 2051 ce-vid 2581 vlan-group 1
+ l2 binding vsi VSI_20052
+#
+interface GigabitEthernet1/5/6.4088
+ description HUAWEI 22SM 22SM  EBC004 EO1604711
+ control-vid 4088 dot1q-termination
+ vlan-group 1
+ dot1q termination vid 4088 vlan-group 1
+ l2 binding vsi CPE_Management_22SM_2NHW
+ loop-detect enable 
+ loop-detect block 240
+#
+#
+interface LoopBack0
+ ip address 10.115.4.79 255.255.255.255
+#
+#
+ospf 1
+ bfd all-interfaces enable
+ bfd all-interfaces min-tx-interval 30 min-rx-interval 30
+ spf-schedule-interval intelligent-timer 1000 1 100
+ opaque-capability enable
+ graceful-restart
+ area 20.20.20.3
+  network 10.114.17.0 0.0.0.127
+  network 10.114.22.0 0.0.0.127
+  network 10.115.4.79 0.0.0.0
+#
+#
+ospf mib-binding 1
+#
+#
+snmp-agent
+snmp-agent local-engineid 000007DB7FFFFFFF00003FB5
+snmp-agent community write cipher %$%$6hyLNq{2vE9g$iAibt_,9(k$GbQB.i9RWW=B8mNC06{2(k'9<V|!19ZU`;(MLR;!ld~Gk09(%$%$ mib-view huawei
+snmp-agent community read cipher %$%$Io.$';\_I+n\2IS&!O\Q9(kc\~LdSrK9;3Ork88^>'3,(kf9v&z'68e.)19PTIRQ~BoOko9(%$%$ mib-view huawei
+snmp-agent sys-info version v2c
+undo snmp-agent sys-info version v3
+snmp-agent group v3 user noauthentication
+snmp-agent target-host trap address udp-domain 10.112.248.1 params securityname cipher @%@%$:K$>Ug;]DMscPOpq[XR9(lI@%@% v2c private-netmanager
+snmp-agent target-host trap address udp-domain 10.112.250.1 params securityname cipher @%@%6s|hD]oAbY~&bU62iym~9(lP@%@% v2c private-netmanager
+snmp-agent mib-view included huawei iso
+snmp-agent usm-user v3 user
+snmp-agent usm-user v3 user group user
+snmp-agent trap source LoopBack0
+snmp-agent trap enable
+undo snmp-agent trap enable feature-name OSPF trap-name ospfIfStateChange
+undo snmp-agent trap enable feature-name OSPF trap-name ospfVirtIfStateChange
+undo snmp-agent trap enable feature-name OSPF trap-name ospfNbrStateChange
+undo snmp-agent trap enable feature-name OSPF trap-name ospfVirtNbrStateChange
+undo snmp-agent trap enable feature-name OSPF trap-name ospfIfAuthFailure
+undo snmp-agent trap enable feature-name OSPF trap-name ospfVirtIfAuthFailure
+undo snmp-agent trap enable feature-name OSPF trap-name ospfIfRxBadPacket
+undo snmp-agent trap enable feature-name OSPF trap-name ospfVirtIfRxBadPacket
+undo snmp-agent trap enable feature-name OSPF trap-name ospfLsdbOverflow
+undo snmp-agent trap enable feature-name OSPF trap-name ospfLsdbApproachingOverflow
+undo snmp-agent trap enable feature-name OSPF trap-name ospfRestartStatusChange
+undo snmp-agent trap enable feature-name OSPF trap-name ospfNbrRestartHelperStatusChange
+undo snmp-agent trap enable feature-name OSPF trap-name ospfVirtNbrRestartHelperStatusChange
+undo snmp-agent trap enable feature-name OSPF trap-name ospfNssaTranslatorStatusChange
+undo snmp-agent trap enable feature-name OSPF trap-name ospfVirtIfConfigError
+undo snmp-agent trap enable feature-name OSPF trap-name ospfTxRetransmit
+undo snmp-agent trap enable feature-name OSPF trap-name ospfVirtIfTxRetransmit
+undo snmp-agent trap enable feature-name OSPF trap-name ospfOriginateLsa
+undo snmp-agent trap enable feature-name OSPF trap-name ospfMaxAgeLsa
+undo snmp-agent trap enable feature-name ospfv3 trap-name ifrxbadpacket
+undo snmp-agent trap enable feature-name ospfv3 trap-name virtifrxbadpacket
+undo snmp-agent trap enable feature-name ospfv3 trap-name restartstatuschange
+undo snmp-agent trap enable feature-name ospfv3 trap-name nbrrestarthelperstatuschange
+undo snmp-agent trap enable feature-name ospfv3 trap-name virtnbrrestarthelperstatuschange
+undo snmp-agent trap enable feature-name ospfv3 trap-name nssatranslatorstatuschange
+undo snmp-agent trap enable feature-name FIB trap-name hwWholeFwdResLackResume
+undo snmp-agent trap enable feature-name FIB trap-name hwWholeFwdResLack
+undo snmp-agent trap enable feature-name FIB trap-name hwWholeFwdResThresholdExceedResume
+undo snmp-agent trap enable feature-name FIB trap-name hwWholeFwdResThresholdExceed
+undo snmp-agent trap enable feature-name MPLS_LSPM trap-name mplsXCUp
+undo snmp-agent trap enable feature-name MPLS_LSPM trap-name mplsXCDown
+undo snmp-agent trap enable feature-name MPLS_LSPM trap-name hwMplsLdpVirtualTunnelUp
+undo snmp-agent trap enable feature-name MPLS_LSPM trap-name hwMplsLdpVirtualTunnelDown
+undo snmp-agent trap enable feature-name L2VPN trap-name hwVplsVcStatusChange
+undo snmp-agent trap enable feature-name ldp trap-name Session-Retry
+undo snmp-agent trap enable feature-name ldp trap-name Session-PVL
+undo snmp-agent trap enable feature-name ldp trap-name Session-Up-MIB
+undo snmp-agent trap enable feature-name ldp trap-name Session-Down-MIB
+undo snmp-agent trap enable feature-name port trap-name hwPortPhysicalRateDegradeAlarm
+undo snmp-agent trap enable feature-name port trap-name hwPortPhysicalRateDegradeAlarmResume
+undo snmp-agent trap enable feature-name port trap-name hwInputRateChangeOverThresholdNotice
+undo snmp-agent trap enable feature-name port trap-name hwOutputRateChangeOverThresholdNotice
+#
+stelnet server enable
+ssh authentication-type default password
+ssh client first-time enable
+ssh client 10.112.248.1 assign rsa-key 10.112.248.1
+sftp client-source -i LoopBack0
+#
+#
+user-interface con 0
+ authentication-mode aaa
+ screen-length 0
+user-interface aux 0
+user-interface vty 0 4
+ authentication-mode aaa
+ user privilege level 15
+ protocol inbound ssh
+user-interface vty 16 20
+ authentication-mode aaa
+ user privilege level 15
+ protocol inbound ssh
+#
+oam-mgr
+#
+pm
+ statistics enable
+ pm-server PMS_101122481
+  protocol sftp ip-address 10.112.248.1
+  username ftpuser password @%@%5UfiH^>Vt6\Uo-#yrHMT7kou@%@%
+  path ftproot/Bulk_Stat/VRP/3146125
+ upload-config PMS_101122481 server PMS_101122481
+ statistics-task n1122481_g15_i1005_t0
+  record-interval 1
+  binding instance-type interface instance GigabitEthernet0/0/0
+  binding instance-type interface instance GigabitEthernet1/0/0
+  binding instance-type interface instance GigabitEthernet1/0/1
+  binding instance-type interface instance GigabitEthernet1/2/0
+  binding instance-type interface instance GigabitEthernet1/2/1
+  binding instance-type interface instance GigabitEthernet1/2/2
+  binding instance-type interface instance GigabitEthernet1/2/3
+  binding instance-type interface instance GigabitEthernet1/2/4
+  binding instance-type interface instance GigabitEthernet1/2/5
+  binding instance-type interface instance GigabitEthernet1/2/6
+  binding instance-type interface instance GigabitEthernet1/2/7
+  binding instance-type interface instance GigabitEthernet1/3/0
+  binding instance-type interface instance GigabitEthernet1/3/1
+  binding instance-type interface instance GigabitEthernet1/3/2
+  binding instance-type interface instance GigabitEthernet1/3/3
+  binding instance-type interface instance GigabitEthernet1/3/4
+  binding instance-type interface instance GigabitEthernet1/3/5
+  binding instance-type interface instance GigabitEthernet1/3/6
+  binding instance-type interface instance GigabitEthernet1/3/7
+  binding instance-type interface instance GigabitEthernet1/5/0
+  binding instance-type interface instance GigabitEthernet1/5/1
+  binding instance-type interface instance GigabitEthernet1/5/2
+  binding instance-type interface instance GigabitEthernet1/5/3
+  binding instance-type interface instance GigabitEthernet1/5/4
+  binding instance-type interface instance GigabitEthernet1/5/5
+  binding instance-type interface instance GigabitEthernet1/5/6
+  binding instance-type interface instance GigabitEthernet1/5/7
+#
+license
+ active 10ge-interface slot 1
+soc
+

@@ -13,21 +13,19 @@ use Yii;
  * @property string $loopback999_ipv6
  * @property string $sap_id
  */
-class NddOutputMaster extends \yii\db\ActiveRecord
-{
+class NddOutputMaster extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'ndd_output_master';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['host_name', 'loopback0_ipv4', 'loopback999_ipv6', 'sap_id'], 'required'],
             [['host_name', 'loopback0_ipv4', 'sap_id'], 'string', 'max' => 30],
@@ -38,8 +36,7 @@ class NddOutputMaster extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => 'ID',
             'host_name' => 'Host Name',
@@ -48,4 +45,19 @@ class NddOutputMaster extends \yii\db\ActiveRecord
             'sap_id' => 'Sap ID',
         ];
     }
+
+    public function parseTextFile($content = '') {
+        $read_file = $content;
+        $rows = explode("\r\n", $read_file);
+        if (count($rows) < 2) {
+            $rows = explode(PHP_EOL, $read_file);
+            if (count($rows) < 2) {
+                $rows = explode("\n", $read_file);
+            }
+        } else {
+            $rows = explode("\n", $read_file);
+        }
+        return $rows;
+    }
+
 }
