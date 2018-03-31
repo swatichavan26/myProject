@@ -127,34 +127,43 @@ class NddOutputMasterController extends Controller {
         if (file_exists($showrunPath)) {
             $contents = file_get_contents($showrunPath);
         }
+        $qos_policy = [];
         $data = [];
+        $mpls_ldp = [];
         if (!empty($contents)) {
             $rows = $model->parseTextFile($contents);
+            $dnsServer = 1;
             foreach ($rows as $key => $value) {
                 if (preg_match("/^sysname/", $rows[$key])) {
                     $data['host_name'] = BuiltMasterNew::getHostname($rows[$key]);
                 } elseif (preg_match("/^dns server/", $rows[$key]) && !preg_match("/^dns server source-ip /", $rows[$key])) {
-                    $dns_server = BuiltMasterNew::getDnsServer($rows[$key]);
-                    if (isset($data['dns_server']) && !empty($data['dns_server'])) {
-                        $data['dns_server'] .= "," . $dns_server;
-                    } else {
-                        $data['dns_server'] = $dns_server;
-                    }
-                } elseif (preg_match("/^dns server source-ip /", $rows[$key])) {
-                    $dns_server_source_ip = BuiltMasterNew::getDnsServerSourceIp($rows[$key]);
-                    if (isset($data['dns_server_source_ip']) && !empty($data['dns_server_source_ip'])) {
-                        $data['dns_server_source_ip'] .= "," . $dns_server_source_ip;
-                    } else {
-                        $data['dns_server_source_ip'] = $dns_server_source_ip;
-                    }
+                    $data['dns_server_' . $dnsServer] = BuiltMasterNew::getReplacedValue($rows[$key], "dns server");
+                    $dnsServer++;
+                } elseif (preg_match("/^info-center loghost/", $rows[$key])) {
+                    $data['loghost'] = BuiltMasterNew::getReplacedValue($rows[$key], "info-center loghost");
                 } elseif (preg_match("/^qos-profile/", $rows[$key])) {
-                    $data['policy_name'] = BuiltMasterNew::getDnsServerSourceIp($rows[$key]);
-                    
+                    $qos_profile = BuiltMasterNew::getReplacedValue($rows[$key], "qos-profile");
+                    $key++;
+                    $policies = BuiltMasterNew::getPolicyCir($rows[$key]);
+                    $qos_policy[$qos_profile] = $policies;
+                } elseif (preg_match("/hwtacacs-server authentication/", $rows[$key]) && preg_match("/secondary/", $rows[$key])) {
+                    $data['tacacs_secondary'] = BuiltMasterNew::getReplacedValue($rows[$key], "hwtacacs-server authentication");
+                    $data['tacacs_secondary'] = BuiltMasterNew::getReplacedValue($data['tacacs_secondary'], "secondary");
+                } elseif (preg_match("/hwtacacs-server authentication/", $rows[$key]) && !preg_match("/secondary/", $rows[$key])) {
+                    $data['tacacs_primary'] = BuiltMasterNew::getReplacedValue($rows[$key], "hwtacacs-server authentication");
+                } elseif (preg_match("/mpls ldp remote-peer/", $rows[$key])) {
+                    $hostname = BuiltMasterNew::getReplacedValue($rows[$key], "mpls ldp remote-peer");
+                    $temp['remote_hostname'] = $hostname;
+                    $key++;
+                    $ip = BuiltMasterNew::getReplacedValue($rows[$key], "remote-ip");
+                    $temp['remote_ip'] = $ip;
+                    $mpls_ldp[] = $temp;
+                    $temp = [];
                 }
             }
         }
         echo "<pre/>";
-        print_r($data);
+        print_r($mpls_ldp);
         die;
     }
 
