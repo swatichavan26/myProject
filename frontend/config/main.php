@@ -56,6 +56,10 @@ return [
                 ],
             ],
         ],
+        // Added common utility component for common function
+        'CommonUtility' => [
+            'class' => 'common\components\CommonUtility',
+        ],
     /*
       'urlManager' => [
       'enablePrettyUrl' => true,
