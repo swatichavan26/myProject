@@ -29,10 +29,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'host_name',
+            'hostname',
             'loopback0_ipv4',
             'loopback999_ipv6',
-            'sap_id',
+            'sapid',
         ],
     ]) ?>
 
