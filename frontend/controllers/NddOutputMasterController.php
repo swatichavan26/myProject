@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use common\components\BuiltMasterNew;
+use common\components\CommonUtility;
 
 /**
  * NddOutputMasterController implements the CRUD actions for NddOutputMaster model.
@@ -165,6 +166,39 @@ class NddOutputMasterController extends Controller {
         echo "<pre/>";
         print_r($mpls_ldp);
         die;
+    }
+    
+    public function actionGeneratenip($id, $outputMode = 'F', $version = '20.8') {
+        if (!empty($id)) {
+            $modelObj = new NddOutputMaster();
+            $model = $modelObj->getNddModel($id);
+            //get Nip and File name
+            $NIPArray = $modelObj->generateNIP($id, $version = '20.8');
+
+            $textContent = $NIPArray['textContent'];
+            $reportFilename = $NIPArray['fileName'];
+
+            if ($outputMode == 'S') {
+                return $textContent;
+            }
+            $textContent = Yii::$app->CommonUtility->convertCSSNIPHtmlToText($textContent, $model->sapid, 'ISO-8859-1');
+
+            if (!is_dir($modelObj->getNIPShowRunReportsDownloadDirPath())) {
+                @mkdir($modelObj->getNIPShowRunReportsDownloadDirPath(), 0777, true);
+            }
+            $reportFilepath = $modelObj->getNIPShowRunReportsDownloadDirPath() . DIRECTORY_SEPARATOR . $reportFilename;
+
+            if ($outputMode == 'F') {
+                header('Content-Type: application/octet-stream');
+                header('Content-Disposition: attachment; filename=' . basename($reportFilepath));
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate');
+                header('Pragma: public');
+                header('Content-Length: ' . strlen($textContent) + 5);
+                echo $textContent;
+                exit();
+            }
+        }
     }
 
 }
