@@ -1,7 +1,7 @@
 
 DROP TABLE IF EXISTS `ndd_output_master`;
 CREATE TABLE `ndd_output_master` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL,
   `host_name` varchar(30) NOT NULL,
   `loopback0_ipv4` varchar(30) NOT NULL,
   `loopback999_ipv6` varchar(50) NOT NULL,
@@ -11,3 +11,6 @@ CREATE TABLE `ndd_output_master` (
 ALTER TABLE `ndd_output_master`
   ADD PRIMARY KEY (`id`),
   ADD KEY `host_name` (`host_name`);
+
+ALTER TABLE `db_optus`.`ndd_output_master` 
+CHANGE COLUMN `id` `id` INT(10) NOT NULL AUTO_INCREMENT ;
