@@ -48,4 +48,15 @@ class BuiltMasterNew extends \yii\base\Component {
         return $data;
     }
 
+    public function getLoopback($value) {
+        $loopback = '';
+        if (!empty($value)) {
+            preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", trim($value), $temp);
+            if (is_array($temp) && count($temp) > 0) {
+                $loopback = trim($temp[0]);
+            }
+        }
+        return $loopback;
+    }
+
 }
