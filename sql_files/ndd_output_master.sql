@@ -34,4 +34,12 @@ ALTER TABLE `db_optus`.`ndd_output_master`
 CHANGE COLUMN `sap_id` `sapid` VARCHAR(30) NOT NULL ,
 CHANGE COLUMN `host_name` `hostname` VARCHAR(30) NOT NULL ;
 
+ALTER TABLE `ndd_output_master` 
+ADD COLUMN `dns_server_1` VARCHAR(255) NULL AFTER `showrun_path`,
+ADD COLUMN `dns_server_2` VARCHAR(255) NULL AFTER `dns_server_1`,
+ADD COLUMN `loghost` VARCHAR(255) NULL AFTER `dns_server_2`,
+ADD COLUMN `tacacs_primary` VARCHAR(255) NULL AFTER `loghost`,
+ADD COLUMN `tacacs_secondary` VARCHAR(255) NULL AFTER `tacacs_primary`,
+ADD COLUMN `tacacs_secondary` VARCHAR(255) NULL AFTER `tacacs_primary`;
+
 

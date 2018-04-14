@@ -1,22 +1,28 @@
 <p>Hostname <?php echo $model->hostname ?></p>
+
 <p>ip ftp source-interface <?php echo $model->loopback0_ipv4 ?></p>
-<p>ip ftp username <usernamre></p><p>service tcp-keepalives-in</p>
+<p>ip ftp username <usernamre></p>
+<p>ip ftp password <password></p>
+
+<p>service tcp-keepalives-in</p>
 <p>service tcp-keepalives-out</p>
 <p>service timestamps debug datetime msec</p>
 <p>service timestamps log datetime msec localtime</p>
 <p>service password-encryption</p>
 <p>logging buffered 2000000</p>
-<p>logging host <?php echo $model->loopback0_ipv4 ?></p>
+<p>logging host <?php echo $model->loghost ?></p>
 <p>logging userinfo</p>
 <p>logging source-interface <?php echo $model->loopback0_ipv4 ?></p>
 <p>logging alarm informational</p>
 <p>no logging console</p>
-<p>ip ftp password <password></p>
+
 <p>!</p>
-<p>ip name-server <IP ADDRESS>  <IP ADDRESS> </p>
-<p>ip domain lookup source-interface Loopback<X></p>
-<p>ip domain name < name, ex: ce.local ></p>
+<p>ip name-server <?php echo $model->dns_server_1 ?></p>
+<p>ip name-server <?php echo $model->dns_server_1 ?></p>
+<p>ip domain lookup source-interface <?php echo $model->loopback0_ipv4 ?></p>
+<p>ip domain name <?php echo $model->dns_domain_name ?></p>
 <p>!</p>
+
 <p>network-clock revertive </p>
 <p>network-clock synchronization automatic</p>
 <p>network-clock synchronization mode QL-enabled</p>
@@ -28,26 +34,33 @@
 <p>network-clock wait-to-restore 300 global</p>
 <p>network-clock log ql-changes</p>
 <p>esmc process</p>
+
+
 <p>policy-map < police name ex:10M ></p>
 <p>class class-default</p>
 <p>police cir 10000000 bc 937500 be 15000000</p>
 <p>!</p>
+
 <p>policy-map < police name ex:100M></p>
 <p>class class-default</p>
 <p>police cir 100000000 bc 125000</p>
 <p>!</p>
+
 <p>policy-map < police name ex:300M></p>
 <p>class class-default</p>
 <p>police cir 300000000 bc 1875000</p>
 <p>!</p>
+
 <p>policy-map < police name ex:150M></p>
 <p>class class-default</p>
 <p>police cir 150000000 bc 937500</p>
 <p>!</p>
+
 <p>policy-map < police name ex: 600M ></p>
 <p>class class-default</p>
 <p>police cir 600000000 bc 3750000</p>
 <p>!</p>
+
 <p>!</p>
 <p>aaa new-model</p>
 <p>!</p>
@@ -99,6 +112,7 @@
 <p>no ip address</p>
 <p>no shutdown</p>
 <p>!</p>
+
 <p>l2 vfi CPE_Management_22SM_2NHW  manual</p>
 <p>vpn id 4392</p>
 <p>bridge-domain 4088</p>
