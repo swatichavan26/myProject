@@ -12,7 +12,7 @@ use common\components\BuiltMasterNew;
 use common\components\CommonUtility;
 use app\models\NddPolicyMapDetails;
 use app\models\NddMplsLdpDetails;
-
+use frontend\models\NddInterfaceData;
 /**
  * NddOutputMasterController implements the CRUD actions for NddOutputMaster model.
  */
@@ -133,6 +133,8 @@ class NddOutputMasterController extends Controller {
         $qos_policy = [];
         $data = [];
         $mpls_ldp = [];
+        $interfaces = [];
+
         if (!empty($contents)) {
             $rows = $model->parseTextFile($contents);
             $dnsServer = 1;
@@ -166,6 +168,9 @@ class NddOutputMasterController extends Controller {
                     $temp['remote_ip'] = $ip;
                     $mpls_ldp[] = $temp;
                     $temp = [];
+                } elseif (preg_match("/^interface GigabitEthernet/", $rows[$key]) OR preg_match("/^interface TenGigabitEthernet/", $rows[$key])) {
+                    $interface = BuiltMasterNew::getInterfaceData($rows, $key);
+                    $interfaces[] = $interface;
                 }
             }
         }
@@ -198,6 +203,18 @@ class NddOutputMasterController extends Controller {
                         $mpls_ldp_model->hostname = $model->hostname;
                         $mpls_ldp_model->created_at = date("Y-m-d H:i:s");
                         $mpls_ldp_model->save(false);
+                    }
+                }
+                if (!empty($interfaces)) {
+                    foreach ($interfaces as $interfaces_dtl) {
+                        $nddInterfaceModel = new NddInterfaceData();
+                        foreach ($interfaces_dtl as $key => $value) {
+                            $nddInterfaceModel->$key = $value;
+                        }
+                        $nddInterfaceModel->output_master_id = $model->id;
+                        $nddInterfaceModel->hostname = $model->hostname;
+                        $nddInterfaceModel->created_at = date("Y-m-d H:i:s");
+                        $nddInterfaceModel->save(false);
                     }
                 }
             }
