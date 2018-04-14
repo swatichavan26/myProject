@@ -183,8 +183,9 @@ vsi CPE_Management_22SM_2NHW static
  isolate spoken
 #
 #
-interface GigabitEthernet1/2/3
+interface GigabitEthernet1/2/3.4088
  description 22SM_S2WE_EBC001_VNX_CO1462267
+qinq termination pe-vid 501 ce-vid 2143 vlan-group 1
  undo shutdown
  mode user-termination
  undo dcn 
