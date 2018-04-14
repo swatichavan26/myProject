@@ -35,38 +35,21 @@
 <p>network-clock log ql-changes</p>
 <p>esmc process</p>
 
-
-<p>policy-map < police name ex:10M ></p>
-<p>class class-default</p>
-<p>police cir 10000000 bc 937500 be 15000000</p>
-<p>!</p>
-
-<p>policy-map < police name ex:100M></p>
-<p>class class-default</p>
-<p>police cir 100000000 bc 125000</p>
-<p>!</p>
-
-<p>policy-map < police name ex:300M></p>
-<p>class class-default</p>
-<p>police cir 300000000 bc 1875000</p>
-<p>!</p>
-
-<p>policy-map < police name ex:150M></p>
-<p>class class-default</p>
-<p>police cir 150000000 bc 937500</p>
-<p>!</p>
-
-<p>policy-map < police name ex: 600M ></p>
-<p>class class-default</p>
-<p>police cir 600000000 bc 3750000</p>
-<p>!</p>
+<?php if(!empty($policyModel)){ 
+            foreach ($policyModel as $key => $policy) {  ?> 
+               <p>policy-map <?php echo $policy->police_name; ?></p>
+               <p>class class-default</p>
+               <p>police cir <?php echo $policy->cir; ?> bc <?php echo $policy->pbs; ?> be <?php echo $policy->pir; ?></p>
+               <p>!</p>
+    <?php } ?> 
+<?php } ?>
 
 <p>!</p>
 <p>aaa new-model</p>
 <p>!</p>
 <p>aaa group server tacacs+ OPTUS-TACACS</p>
-<p>server 10.194.228.68</p>
-<p>server 10.194.227.68</p>
+<p>server <?php echo $model->tacacs_primary ?></p>
+<p>server <?php echo $model->tacacs_secondary ?></p>
 <p>ip tacacs source-interface Loopback1</p>
 <p>!</p>
 <p>aaa authentication login VTY-TACACS group OPTUS-TACACS local</p>
@@ -82,11 +65,11 @@
 <p>aaa session-id common</p>
 <p>!</p>
 <p>tacacs-server administration</p>
-<p>tacacs-server host 10.194.228.68</p>
-<p>tacacs-server host 10.194.227.68</p>
+<p>tacacs-server host <?php echo $model->tacacs_primary ?></p>
+<p>tacacs-server host <?php echo $model->tacacs_secondary ?></p>
 <p>tacacs-server timeout 3</p>
-<p>tacacs-server key <KEY></p>
-<p>ip tacacs source-interface Loopback<NUMBER></p>
+<p>tacacs-server key <?php echo $model->tacacs_server_key ?></p>
+<p>ip tacacs source-interface <?php echo $model->tacacs_source_ip ?></p>
 <p>!</p>
 <p>username < username > privilege 15 secret <password></p>
 <p>!</p>
@@ -101,17 +84,31 @@
 <p>mpls ldp igp sync holddown 60000</p>
 <p>mpls ldp discovery targeted-hello accept</p>
 <p>mpls ldp sync</p>
-<p>mpls ldp router-id Loopback< X > force</p>
+<p>mpls ldp router-id <?php echo $model->loopback0_ipv4 ?> force</p>
 <p>!</p>
-<p>mpls ldp neighbor < ip neighbour > targeted ldp</p>
+
+<?php if(!empty($mplsModel)){
+        foreach ($mplsModel as $key => $mpls) {  ?> 
+            <p>mpls ldp neighbor <?php echo $mpls->remote_ip; ?> targeted ldp</p>
+            <p>!</p>
+<?php } ?> 
+<?php } ?>
 
 <!--<p>!!!! Example of configuration</p>-->
-
+   
 <p>interface GigabitEthernet1/2/3</p>
 <p>description 22SM_S2WE_EBC001_VNX_CO1462267</p>
 <p>no ip address</p>
 <p>no shutdown</p>
 <p>!</p>
+
+<p>service instance 2 ethernet</p>
+<p>description 22SM_S2WE_EBC001_VNX_CO1462267</p>
+<p>encapsulation dot1q  4088</p>
+<p>rewrite ingress tag pop 1 symmetric</p>
+<p>bridge-domain 4088</p>
+<p>!</p>
+
 
 <p>l2 vfi CPE_Management_22SM_2NHW  manual</p>
 <p>vpn id 4392</p>
@@ -119,12 +116,9 @@
 <p>neighbor 10.115.32.2  encapsulation mpls</p>
 <p>neighbor 10.115.32.2  encapsulation mpls</p>
 <p>!</p>
-<p>service instance 2 ethernet</p>
-<p>description 22SM_S2WE_EBC001_VNX_CO1462267</p>
-<p>encapsulation dot1q  4088</p>
-<p>rewrite ingress tag pop 1 symmetric</p>
-<p>bridge-domain 4088</p>
-<p>!</p>
+
+
+
 
 <p>!</p>
 <p>l2 vfi < VFI NAME > manual</p>
@@ -203,6 +197,8 @@
 <p>transport output ssh</p>
 <p>!</p>
 <!--<p>-----------------------------------------</p>-->
+
+<?php //die('Swati') ?>
 
 
 

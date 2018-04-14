@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace frontend\models;
 
 use Yii;
 
@@ -56,4 +56,11 @@ class NddPolicyMapDetails extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
         ];
     }
+    public function getPolicyMapDtl($output_master_id) {
+        $data = NddPolicyMapDetails::find()->select('police_name,cir,pir,pbs,cbs')
+                ->where(['output_master_id' => $output_master_id])
+                ->all();
+        return $data;
+    }
+    
 }

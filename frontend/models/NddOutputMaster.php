@@ -98,6 +98,10 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
             $textContent = '';
             $modelObj = new NddOutputMaster();
             $model = $modelObj->getNddModel($id);
+            $policyMapObj = new NddPolicyMapDetails();
+            $policyModel = $policyMapObj->getPolicyMapDtl($id); 
+            $mplsObj = new NddMplsLdpDetails();
+            $mplsModel = $mplsObj->getMplsLdpDtl($id); 
             $suffix = $model->id . '-' . $model->sapid . '-' . $model->hostname;
 
             if ($version == '20.8') {
@@ -105,8 +109,7 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
             } else {
                 $reportFilename = 'NIP_Showrun_Report_' . $suffix . '.txt';
             }
-
-            $textContent = Yii::$app->controller->renderPartial('//ndd-output-master/reports/' . $version . '/_showrun_report_nip_html', array('model' => $model), true);
+            $textContent = Yii::$app->controller->renderPartial('//ndd-output-master/reports/' . $version . '/_showrun_report_nip_html', array('model' => $model,'policyModel' => $policyModel,'mplsModel'=>$mplsModel), true);
             $NIPArray['textContent'] = $textContent;
             $NIPArray['fileName'] = $reportFilename;
             return $NIPArray;
