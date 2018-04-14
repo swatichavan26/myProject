@@ -254,5 +254,19 @@ class NddOutputMasterController extends Controller {
             }
         }
     }
+    public function actionGetFile($id, $fileName, $flag=1) {
+        $showrunPath = Yii::$app->basePath . "/uploads/showruns/$fileName";
+        $contents = "";
+        if (file_exists($showrunPath)) {
+            $contents = file_get_contents($showrunPath);
+        }
+        if($flag==1){
+        return $this->render("view_file", [
+            'contents' => $contents]);
+        }else{
+            return $this->renderPartial("view_file", [
+            'contents' => $contents]); 
+        }
+    }
 
 }

@@ -2,6 +2,10 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+//use common\models\BuiltMasterCommands;
+use yii\helpers\Url;
+use kartik\dialog\Dialog;
+use yii\bootstrap\Modal;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -21,17 +25,17 @@ $this->params['breadcrumbs'][] = $this->title;
     GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => 'yii\grid\SerialColumn'],            
             'id',
+            'sapid',
             'hostname',
             'loopback0_ipv4',
-            'loopback999_ipv6',
-            'sapid',
+            'loopback999_ipv6',            
             [
                 'header' => 'Showrun',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return $model->getShowrunDownload($model);
+                    return \frontend\models\NddOutputMaster::getShowLinks($model, 'ndd_output_master');
                 },
             ],
             [
@@ -41,38 +45,44 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $model->getNIPDownload($model);
                 },
             ],
-            [
-                'header' => 'Preview',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return \frontend\models\NddOutputMaster::getShowLinks($model, 'ndd_output_master', 'NddOutputMaster', 'preview', 'showrun');
-                },
-            ],
-            ['class' => 'yii\grid\ActionColumn'],
+            //['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn','template'=>'{view} {update}' ] 
         ],
     ]);
     ?>
 </div>
+<?php
+Modal::begin([
+    'id' => 'myModal',
+    'size' => 'modal-lg',
+]);
+?>
+<div class="ecrDialog">
+
+</div>
+<?php
+Modal::end();
+?>
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript">
     $(".showDetails").css('margin-left', 'auto');
-    function getForm(id, status, modelName, header, file_name) {
+            function getForm(id, file_name, flag = 0) {
 //        $('div.custom-loader').show();
-        var url = "<?php echo \Yii::$app->getUrlManager()->createUrl('built-router-ecr-master/get-router-data') ?>";
+            var url = "<?php echo \Yii::$app->getUrlManager()->createUrl('ndd-output-master/get-file') ?>";
 
-        var details = 'id=' + id + '&status=' + status + "&modelName=" + modelName + "&header=" + header + '&name=' + file_name;
-        jQuery.ajax({
+            var details = 'id=' + id + '&fileName=' + file_name + '&flag=' + flag;
+            jQuery.ajax({
             url: url,
-            type: 'POST',
-            data: details,
-            success: function (data)
-            {
-                $('#myModal').modal('show');
-                $(".ecrDialog").html(data);
-                return false;
+                    type: 'GET',
+                    data: details,
+                    success: function (data)
+                    {
+                        $('#myModal').modal('show');
+                        $(".ecrDialog").html(data);
+                        return false;
+                    }
+            });
+                    return false;
             }
-        });
-        return false;
-    }
 
 </script>

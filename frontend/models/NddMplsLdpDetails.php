@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace frontend\models;
 
 use Yii;
 
@@ -49,5 +49,12 @@ class NddMplsLdpDetails extends \yii\db\ActiveRecord
             'remote_ip' => 'Remote Ip',
             'created_at' => 'Created At',
         ];
+    }
+    
+    public function getMplsLdpDtl($output_master_id) {
+        $data = NddMplsLdpDetails::find()->select('remote_hostname,remote_ip,hostname')
+                ->where(['output_master_id' => $output_master_id])
+                ->all();
+        return $data;
     }
 }
