@@ -150,7 +150,6 @@ class NddOutputMasterController extends Controller {
                     }
                 } elseif (preg_match("/^qos-profile/", $rows[$key])) {
                     $data['policy_name'] = BuiltMasterNew::getDnsServerSourceIp($rows[$key]);
-                    
                 }
             }
         }
@@ -158,7 +157,7 @@ class NddOutputMasterController extends Controller {
         print_r($data);
         die;
     }
-    
+
     public function actionGeneratenip($id, $outputMode = 'F', $version = '20.8') {
         if (!empty($id)) {
             $modelObj = new NddOutputMaster();
@@ -189,6 +188,20 @@ class NddOutputMasterController extends Controller {
                 echo $textContent;
                 exit();
             }
+        }
+    }
+    public function actionGetFile($id, $fileName, $flag=1) {
+        $showrunPath = Yii::$app->basePath . "/uploads/showruns/$fileName";
+        $contents = "";
+        if (file_exists($showrunPath)) {
+            $contents = file_get_contents($showrunPath);
+        }
+        if($flag==1){
+        return $this->render("view_file", [
+            'contents' => $contents]);
+        }else{
+            return $this->renderPartial("view_file", [
+            'contents' => $contents]); 
         }
     }
 

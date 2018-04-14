@@ -84,17 +84,7 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
         }
     }
 
-    public function getShowrunDownload($model) {
-        if ($model->pdf_done) {
-            $url = Html::a('Download', ['getShowrun', 'id' => $model->id], ['class' => 'label label-success']);
-            return $url;
-        } else if ($model->pdf_ready) {
-            return "<span class='label label-info'>Processing</span>";
-        } else {
-            return "<span class='label label-warning'>Pending</span>";
-        }
-    }
-
+    
     /*
      * Author : Swati Chavan
      * Function : Generate NIP for Optus device
@@ -127,14 +117,17 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
         return dirname(\Yii::$app->basePath) . DIRECTORY_SEPARATOR . 'downloads' . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . 'optus-nip-showrun';
     }
 
-    public static function getShowLinks($model, $fields, $modelName, $header, $file_name) {
+    public static function getShowLinks($model, $fields) {
         $button = "<div class='btn-wrapper'>";
-        if (!empty($modelName))
-            $button .= Html::Button('<i class="fa fa-search" aria-hidden="true"></i>', ['onclick' => "getForm(" . $model->id . ",'$fields','$modelName','$header');", 'rel' => $fields, 'class' => 'edit-icon ecr-built-button', 'data-toggle' => 'tooltip', 'data-placement' => 'top']);
-        if (!empty($file_name))
-            $button .= Html::a('<i class="fa fa-file-code-o" aria-hidden="true"></i>', ['built-router-ecr-master/get-file?hostname=' . $model->hostname . "&name=$file_name"], ['class' => 'ecr-built-file-link', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => $model->hostname, 'target' => '_blank']);
+        if (!empty($model))
+            $button .= Html::Button('<i class="fa fa-search" aria-hidden="true"></i>', ['onclick' => "getForm(" . $model->id . ",'$model->showrun_path',0);", 'rel' => $fields, 'class' => 'edit-icon ecr-built-button', 'data-toggle' => 'tooltip', 'data-placement' => 'top']);
+        //if (!empty($file_name))
+            //$button .= Html::a('<i class="fa fa-file-code-o" aria-hidden="true"></i>', ['ndd-output-master/get-file?id='.$model->id.'&fileName=' . $model->showrun_path.'&flag=1'], ['class' => 'ecr-built-file-link', 'data-toggle' => 'tooltip', 'data-placement' => 'top', 'title' => $model->hostname, 'target' => '_blank']);
         $button .= "</div>";
         return $button;
     }
+    
+    
+    
 
 }
