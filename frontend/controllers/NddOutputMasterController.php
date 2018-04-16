@@ -261,7 +261,10 @@ class NddOutputMasterController extends Controller {
         $contents = "";
         if (file_exists($showrunPath)) {
             $contents = file_get_contents($showrunPath);
+        }else{
+          echo 'File Not Found';  
         }
+        
         if ($flag == 1) {
             return $this->render("view_file", [
                         'contents' => $contents]);
