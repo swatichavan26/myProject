@@ -27,10 +27,17 @@ if (isset($model->topology_type)) {
         <div class="col-lg-6">
             <div class="form-group"><?= $form->field($model, 'user_hostname') ?></div>
             <div class="form-group"><?= $form->field($model, 'user_loopback0') ?></div>
-            <div class="form-group"><?= $form->field($model, 'showrun_path')->fileInput() ?></div>
-            <div class="form-group"><?= $form->field($model, 'enterprise_type')->dropDownList(['Yes' => 'Yes', 'No' => 'No'], ['prompt' => 'Select']); ?></div>
+            <div class="form-group"><?= $form->field($model, 'enterprise_type')->dropDownList(['Yes' => 'Yes', 'No' => 'No'], ['id'=>'enterprise_type','prompt' => 'Select']); ?></div>
         </div>
     </div>
+    
+    <div class="row" id='entNo'>
+        <div class="col-lg-6">
+            <div class="form-group"><?= $form->field($model, 'showrun_path')->fileInput() ?></div>            
+        </div>
+    </div>
+    
+    <div id='entYes'>
 
     <div class="row" id='topologyDiv'>
         <div class="col-lg-6">
@@ -68,6 +75,8 @@ if (isset($model->topology_type)) {
             <div class="form-group"><?= $form->field($model, 'west_da_loopback') ?></div>
         </div>
     </div>
+    
+    </div>
 
     <div class="row">
         <div class="col-lg-12">
@@ -91,6 +100,18 @@ if (isset($model->topology_type)) {
             } else {
                 $('#ringDiv').hide();
                 $('#SpurDiv').show();
+            }
+        });
+        
+        $(document.body).on('change', '#enterprise_type', function () {
+            var val1 = $('#enterprise_type').val();
+            alert(val1);
+            if (val1 == 'Yes') {
+                $('#entYes').show();
+                $('#entNo').hide();
+            } else {
+                $('#entYes').hide();
+                $('#entNo').show();
             }
         });
     });
