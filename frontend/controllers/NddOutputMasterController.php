@@ -292,6 +292,28 @@ class NddOutputMasterController extends Controller {
 
     public function actionUpload() {
         $model = new NddOutputMaster();
+
+        if ($model->load(Yii::$app->request->post())) {
+            $post = Yii::$app->request->post('NddOutputMaster');
+            echo '<pre>';
+            print_r($post);
+            echo '</pre>';
+            $topology_type = $post['topology_type'];
+
+            if ($topology_type == 'Ring') {
+                $model->scenario = NddOutputMaster::SCENARIO_RING;
+            }
+            if ($topology_type == 'Spur') {
+                $model->scenario = NddOutputMaster::SCENARIO_SPUR;
+            }
+
+            if ($model->validate()) {
+                if ($model->save()) {
+                    return $this->redirect(['index']);
+                }
+            }
+        }
+
         return $this->render('upload', [
                     'model' => $model,
         ]);

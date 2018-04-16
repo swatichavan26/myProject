@@ -1,22 +1,29 @@
+<?php use frontend\models\NddInterfaceData; ?>
 <p>Hostname <?php echo $model->hostname ?></p>
+
 <p>ip ftp source-interface <?php echo $model->loopback0_ipv4 ?></p>
-<p>ip ftp username <usernamre></p><p>service tcp-keepalives-in</p>
+<p>ip ftp username <usernamre></p>
+<p>ip ftp password <password></p>
+
+<p>service tcp-keepalives-in</p>
 <p>service tcp-keepalives-out</p>
 <p>service timestamps debug datetime msec</p>
 <p>service timestamps log datetime msec localtime</p>
 <p>service password-encryption</p>
 <p>logging buffered 2000000</p>
-<p>logging host <?php echo $model->loopback0_ipv4 ?></p>
+<p>logging host <?php echo $model->loghost ?></p>
 <p>logging userinfo</p>
 <p>logging source-interface <?php echo $model->loopback0_ipv4 ?></p>
 <p>logging alarm informational</p>
 <p>no logging console</p>
-<p>ip ftp password <password></p>
+
 <p>!</p>
-<p>ip name-server <IP ADDRESS>  <IP ADDRESS> </p>
-<p>ip domain lookup source-interface Loopback<X></p>
-<p>ip domain name < name, ex: ce.local ></p>
+<p>ip name-server <?php echo $model->dns_server_1 ?></p>
+<p>ip name-server <?php echo $model->dns_server_1 ?></p>
+<p>ip domain lookup source-interface <?php echo $model->loopback0_ipv4 ?></p>
+<p>ip domain name <?php echo $model->dns_domain_name ?></p>
 <p>!</p>
+
 <p>network-clock revertive </p>
 <p>network-clock synchronization automatic</p>
 <p>network-clock synchronization mode QL-enabled</p>
@@ -28,32 +35,22 @@
 <p>network-clock wait-to-restore 300 global</p>
 <p>network-clock log ql-changes</p>
 <p>esmc process</p>
-<p>policy-map < police name ex:10M ></p>
-<p>class class-default</p>
-<p>police cir 10000000 bc 937500 be 15000000</p>
-<p>!</p>
-<p>policy-map < police name ex:100M></p>
-<p>class class-default</p>
-<p>police cir 100000000 bc 125000</p>
-<p>!</p>
-<p>policy-map < police name ex:300M></p>
-<p>class class-default</p>
-<p>police cir 300000000 bc 1875000</p>
-<p>!</p>
-<p>policy-map < police name ex:150M></p>
-<p>class class-default</p>
-<p>police cir 150000000 bc 937500</p>
-<p>!</p>
-<p>policy-map < police name ex: 600M ></p>
-<p>class class-default</p>
-<p>police cir 600000000 bc 3750000</p>
-<p>!</p>
+
+<?php if(!empty($policyModel)){ 
+            foreach ($policyModel as $key => $policy) {  ?> 
+               <p>policy-map <?php echo $policy->police_name; ?></p>
+               <p>class class-default</p>
+               <p>police cir <?php echo $policy->cir; ?> bc <?php echo $policy->pbs; ?> be <?php echo $policy->pir; ?></p>
+               <p>!</p>
+    <?php } ?> 
+<?php } ?>
+
 <p>!</p>
 <p>aaa new-model</p>
 <p>!</p>
 <p>aaa group server tacacs+ OPTUS-TACACS</p>
-<p>server 10.194.228.68</p>
-<p>server 10.194.227.68</p>
+<p>server <?php echo $model->tacacs_primary ?></p>
+<p>server <?php echo $model->tacacs_secondary ?></p>
 <p>ip tacacs source-interface Loopback1</p>
 <p>!</p>
 <p>aaa authentication login VTY-TACACS group OPTUS-TACACS local</p>
@@ -69,11 +66,11 @@
 <p>aaa session-id common</p>
 <p>!</p>
 <p>tacacs-server administration</p>
-<p>tacacs-server host 10.194.228.68</p>
-<p>tacacs-server host 10.194.227.68</p>
+<p>tacacs-server host <?php echo $model->tacacs_primary ?></p>
+<p>tacacs-server host <?php echo $model->tacacs_secondary ?></p>
 <p>tacacs-server timeout 3</p>
-<p>tacacs-server key <KEY></p>
-<p>ip tacacs source-interface Loopback<NUMBER></p>
+<p>tacacs-server key <?php echo $model->tacacs_server_key ?></p>
+<p>ip tacacs source-interface <?php echo $model->tacacs_source_ip ?></p>
 <p>!</p>
 <p>username < username > privilege 15 secret <password></p>
 <p>!</p>
@@ -88,29 +85,55 @@
 <p>mpls ldp igp sync holddown 60000</p>
 <p>mpls ldp discovery targeted-hello accept</p>
 <p>mpls ldp sync</p>
-<p>mpls ldp router-id Loopback< X > force</p>
+<p>mpls ldp router-id <?php echo $model->loopback0_ipv4 ?> force</p>
 <p>!</p>
-<p>mpls ldp neighbor < ip neighbour > targeted ldp</p>
 
-<!--<p>!!!! Example of configuration</p>-->
+<?php if(!empty($mplsModel)){
+        foreach ($mplsModel as $key => $mpls) {  ?> 
+            <p>mpls ldp neighbor <?php echo $mpls->remote_ip; ?> targeted ldp</p>
+            <p>!</p>
+<?php } ?> 
+<?php } ?>
 
-<p>interface GigabitEthernet1/2/3</p>
-<p>description 22SM_S2WE_EBC001_VNX_CO1462267</p>
-<p>no ip address</p>
-<p>no shutdown</p>
-<p>!</p>
+<?php if(!empty($interfaceModel)){
+        foreach ($interfaceModel as $key => $interface) {  ?> 
+            <p>interface <?php echo $interface->interface; ?></p>
+            <p>description <?php echo $interface->description; ?></p>
+            <p>no ip address</p>
+            <p>no shutdown</p>
+            <p>!</p>
+            <?php 
+            //get interface BDI service instance details 
+            $interfaceObj = new NddInterfaceData();
+            $interfaceBDIModel = $interfaceObj->getInterfaceBDI($model->id,$interface->interface);
+            $i=1; 
+            foreach ($interfaceBDIModel as $interfaceBDI) {  
+            $dot1qArr = explode(',', $interfaceBDI->dot1q_termination) ; 
+            ?>
+            <p>service instance <?php echo $i ?> ethernet</p>
+            <p>description <?php echo $interfaceBDI->description; ?></p>
+            <p>encapsulation dot1q  <?php echo $dot1qArr[0]; if(isset($dot1qArr[1])){ ?> second-dot1q <?php echo $dot1qArr[1]; } ?></p>
+            <p>rewrite ingress tag pop 1 symmetric</p>
+            <p>bridge-domain <?php echo $interfaceBDI->bdi; ?></p>
+            <p>!</p>
+                
+            <?php 
+            $i++ ; 
+            } ?>
+            
+<?php } ?> 
+<?php } ?>
+
+
 <p>l2 vfi CPE_Management_22SM_2NHW  manual</p>
 <p>vpn id 4392</p>
 <p>bridge-domain 4088</p>
 <p>neighbor 10.115.32.2  encapsulation mpls</p>
 <p>neighbor 10.115.32.2  encapsulation mpls</p>
 <p>!</p>
-<p>service instance 2 ethernet</p>
-<p>description 22SM_S2WE_EBC001_VNX_CO1462267</p>
-<p>encapsulation dot1q  4088</p>
-<p>rewrite ingress tag pop 1 symmetric</p>
-<p>bridge-domain 4088</p>
-<p>!</p>
+
+
+
 
 <p>!</p>
 <p>l2 vfi < VFI NAME > manual</p>
@@ -189,6 +212,8 @@
 <p>transport output ssh</p>
 <p>!</p>
 <!--<p>-----------------------------------------</p>-->
+
+<?php die('Swati') ?>
 
 
 

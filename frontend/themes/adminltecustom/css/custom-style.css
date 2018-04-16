@@ -350,7 +350,7 @@ input.reachable_via {height: 23px;}
 .btn-wrapper{display: block; width: 62px;}
 .ecr-built-button{    margin-left: auto;
     background-color: #5bc0de;
-    font-size: 15px;
+    font-size: 11px;
     color: #fff;
     border: 0px;
     margin: 0 auto;
@@ -363,5 +363,5 @@ input.reachable_via {height: 23px;}
     border-radius: 4px;
     display: inline-block;
     margin-left: 6px;
-    font-size: 15px;}
+    font-size: 11px;}
 .ecr-built-file-link:hover{color:#fff !important;}
