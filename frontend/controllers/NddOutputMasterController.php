@@ -13,6 +13,7 @@ use common\components\CommonUtility;
 use app\models\NddPolicyMapDetails;
 use app\models\NddMplsLdpDetails;
 use frontend\models\NddInterfaceData;
+
 /**
  * NddOutputMasterController implements the CRUD actions for NddOutputMaster model.
  */
@@ -254,19 +255,49 @@ class NddOutputMasterController extends Controller {
             }
         }
     }
-    public function actionGetFile($id, $fileName, $flag=1) {
+
+    public function actionGetFile($id, $fileName, $flag = 1) {
         $showrunPath = Yii::$app->basePath . "/uploads/showruns/$fileName";
         $contents = "";
         if (file_exists($showrunPath)) {
             $contents = file_get_contents($showrunPath);
         }
-        if($flag==1){
-        return $this->render("view_file", [
-            'contents' => $contents]);
-        }else{
+        if ($flag == 1) {
+            return $this->render("view_file", [
+                        'contents' => $contents]);
+        } else {
             return $this->renderPartial("view_file", [
-            'contents' => $contents]); 
+                        'contents' => $contents]);
         }
+    }
+
+    public function actionUpload() {
+        $model = new NddOutputMaster();
+
+        if ($model->load(Yii::$app->request->post())) {
+            $post = Yii::$app->request->post('NddOutputMaster');
+            echo '<pre>';
+            print_r($post) ; 
+            echo '</pre>';
+            $topology_type = $post['topology_type'] ; 
+            
+            if($topology_type =='Ring'){
+               $model->scenario = NddOutputMaster::SCENARIO_RING; 
+            }
+            if($topology_type =='Spur'){
+               $model->scenario = NddOutputMaster::SCENARIO_SPUR; 
+            }
+            
+            if ($model->validate()) {
+                if ($model->save()) {
+                    return $this->redirect(['index']);
+                }
+            }
+        }
+
+        return $this->render('upload', [
+                    'model' => $model,
+        ]);
     }
 
 }

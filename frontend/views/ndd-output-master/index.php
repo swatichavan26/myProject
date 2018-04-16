@@ -30,6 +30,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'sapid',
             'hostname',
             'loopback0_ipv4',
+            'user_hostname',            
+            'user_loopback0',
             'loopback999_ipv6',            
             [
                 'header' => 'Showrun',

@@ -1,3 +1,4 @@
+<?php use frontend\models\NddInterfaceData; ?>
 <p>Hostname <?php echo $model->hostname ?></p>
 
 <p>ip ftp source-interface <?php echo $model->loopback0_ipv4 ?></p>
@@ -94,20 +95,34 @@
 <?php } ?> 
 <?php } ?>
 
-<!--<p>!!!! Example of configuration</p>-->
-   
-<p>interface GigabitEthernet1/2/3</p>
-<p>description 22SM_S2WE_EBC001_VNX_CO1462267</p>
-<p>no ip address</p>
-<p>no shutdown</p>
-<p>!</p>
-
-<p>service instance 2 ethernet</p>
-<p>description 22SM_S2WE_EBC001_VNX_CO1462267</p>
-<p>encapsulation dot1q  4088</p>
-<p>rewrite ingress tag pop 1 symmetric</p>
-<p>bridge-domain 4088</p>
-<p>!</p>
+<?php if(!empty($interfaceModel)){
+        foreach ($interfaceModel as $key => $interface) {  ?> 
+            <p>interface <?php echo $interface->interface; ?></p>
+            <p>description <?php echo $interface->description; ?></p>
+            <p>no ip address</p>
+            <p>no shutdown</p>
+            <p>!</p>
+            <?php 
+            //get interface BDI service instance details 
+            $interfaceObj = new NddInterfaceData();
+            $interfaceBDIModel = $interfaceObj->getInterfaceBDI($model->id,$interface->interface);
+            $i=1; 
+            foreach ($interfaceBDIModel as $interfaceBDI) {  
+            $dot1qArr = explode(',', $interfaceBDI->dot1q_termination) ; 
+            ?>
+            <p>service instance <?php echo $i ?> ethernet</p>
+            <p>description <?php echo $interfaceBDI->description; ?></p>
+            <p>encapsulation dot1q  <?php echo $dot1qArr[0]; if(isset($dot1qArr[1])){ ?> second-dot1q <?php echo $dot1qArr[1]; } ?></p>
+            <p>rewrite ingress tag pop 1 symmetric</p>
+            <p>bridge-domain <?php echo $interfaceBDI->bdi; ?></p>
+            <p>!</p>
+                
+            <?php 
+            $i++ ; 
+            } ?>
+            
+<?php } ?> 
+<?php } ?>
 
 
 <p>l2 vfi CPE_Management_22SM_2NHW  manual</p>
@@ -198,7 +213,7 @@
 <p>!</p>
 <!--<p>-----------------------------------------</p>-->
 
-<?php //die('Swati') ?>
+<?php die('Swati') ?>
 
 
 
