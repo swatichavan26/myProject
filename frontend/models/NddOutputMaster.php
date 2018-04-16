@@ -31,7 +31,7 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['user_hostname', 'user_loopback0', 'topology_type','enterprise_type'], 'required'],
+            [['user_hostname', 'user_loopback0','enterprise_type'], 'required'],
             [['hostname', 'loopback0_ipv4', 'sapid'], 'string', 'max' => 30],
             [['east_ngbr_hostname','east_ngbr_loopback','east_ptp_ip','west_ngbr_hostname','west_ngbr_loopback','west_ptp_ip'], 'required', 'on' => self::SCENARIO_RING],
             [['takeoff_hostname','takeoff_loopback','takeoff_ptp_ip'], 'required', 'on' => self::SCENARIO_SPUR],

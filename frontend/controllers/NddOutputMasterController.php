@@ -10,8 +10,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use common\components\BuiltMasterNew;
 use common\components\CommonUtility;
-use app\models\NddPolicyMapDetails;
-use app\models\NddMplsLdpDetails;
+use frontend\models\NddPolicyMapDetails;
+use frontend\models\NddMplsLdpDetails;
 use frontend\models\NddInterfaceData;
 use yii\web\UploadedFile;
 use frontend\models\NddBdiDetails;
@@ -125,16 +125,40 @@ class NddOutputMasterController extends Controller {
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionUploadShowrun() {
+    public function actionUpload() {
         $model = new NddOutputMaster();
         if (!empty(Yii::$app->request->isPost)) {
+            $contents = "";
             $model->showrun_path = UploadedFile::getInstance($model, 'showrun_path');
-            $basePath = Yii::$app->basePath . "/uploads/showruns/";
-            $file_name = $model->showrun_path->baseName . "_" . time() . "." . $model->showrun_path->extension;
-            $model->showrun_path->saveAs($basePath . $file_name);
-//            $file_name = "showrun_1523874838.txt";
-            if (file_exists($basePath . $file_name)) {
-                $contents = file_get_contents($basePath . $file_name);
+            if (!empty($model->showrun_path)) {
+                $basePath = Yii::$app->basePath . "/uploads/showruns/";
+                $file_name = $model->showrun_path->baseName . "_" . time() . "." . $model->showrun_path->extension;
+                $model->showrun_path->saveAs($basePath . $file_name);
+                if (file_exists($basePath . $file_name)) {
+                    $contents = file_get_contents($basePath . $file_name);
+                }
+            }
+            $model->load(Yii::$app->request->post());
+            if (empty($contents)) {
+                Yii::$app->db->createCommand()
+                        ->update('ndd_output_master', ['is_active' => 0], ['user_hostname' => $model->user_hostname])
+                        ->execute();
+                $model->is_active = 1;
+                $post = Yii::$app->request->post('NddOutputMaster');
+                $topology_type = $post['topology_type'];
+
+                if ($topology_type == 'Ring') {
+                    $model->scenario = NddOutputMaster::SCENARIO_RING;
+                }
+                if ($topology_type == 'Spur') {
+                    $model->scenario = NddOutputMaster::SCENARIO_SPUR;
+                }
+                if ($model->validate()) {
+                    if ($model->save()) {
+                        return $this->redirect(['index']);
+                    }
+                }
+                echo "<pre/>",print_r($model->getErrors());die;
             }
             $qos_policy = [];
             $data = [];
@@ -235,6 +259,8 @@ class NddOutputMasterController extends Controller {
                     }
                     if (!empty($bdis)) {
                         foreach ($bdis as $bdis_dtl) {
+                            if (!isset($bdis_dtl['ip_address']))
+                                continue;
                             $nddBdiModel = new NddBdiDetails();
                             foreach ($bdis_dtl as $key => $value) {
                                 $nddBdiModel->$key = $value;
@@ -290,14 +316,11 @@ class NddOutputMasterController extends Controller {
         }
     }
 
-    public function actionUpload() {
+    public function actionUpload1() {
         $model = new NddOutputMaster();
 
         if ($model->load(Yii::$app->request->post())) {
             $post = Yii::$app->request->post('NddOutputMaster');
-            echo '<pre>';
-            print_r($post);
-            echo '</pre>';
             $topology_type = $post['topology_type'];
 
             if ($topology_type == 'Ring') {
