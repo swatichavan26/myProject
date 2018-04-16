@@ -23,14 +23,19 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
     public static function tableName() {
         return 'ndd_output_master';
     }
+    const SCENARIO_RING = 'RING';
+    const SCENARIO_SPUR = 'SPUR';
 
     /**
      * @inheritdoc
      */
     public function rules() {
         return [
-            [['hostname', 'loopback0_ipv4', 'loopback999_ipv6', 'sap_id'], 'required'],
-            [['hostname', 'loopback0_ipv4', 'sap_id'], 'string', 'max' => 30],
+            [['user_hostname', 'user_loopback0', 'topology_type','enterprise_type'], 'required'],
+            [['hostname', 'loopback0_ipv4', 'sapid'], 'string', 'max' => 30],
+            [['east_ngbr_hostname','east_ngbr_loopback','east_ptp_ip','west_ngbr_hostname','west_ngbr_loopback','west_ptp_ip'], 'required', 'on' => self::SCENARIO_RING],
+            [['takeoff_hostname','takeoff_loopback','takeoff_ptp_ip'], 'required', 'on' => self::SCENARIO_SPUR],
+            [['east_ngbr_hostname', 'east_ngbr_loopback', 'east_ptp_ip', 'west_ngbr_hostname','west_ngbr_loopback','west_ptp_ip','takeoff_hostname','takeoff_loopback','takeoff_ptp_ip','east_da_hostname','east_da_loopback','west_da_hostname','west_da_loopback','user_hostname', 'user_loopback0'], 'safe'],
             [['loopback999_ipv6'], 'string', 'max' => 50],
         ];
     }
@@ -44,7 +49,7 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
             'hostname' => 'Host Name',
             'loopback0_ipv4' => 'Loopback0 Ipv4',
             'loopback999_ipv6' => 'Loopback999 Ipv6',
-            'sap_id' => 'Sap ID',
+            'sapid' => 'Sap ID',
         ];
     }
 
@@ -96,12 +101,23 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
         if (!empty($id)) {
             $NIPArray = array();
             $textContent = '';
+            //get NDD model
             $modelObj = new NddOutputMaster();
             $model = $modelObj->getNddModel($id);
+            //get Police map details 
             $policyMapObj = new NddPolicyMapDetails();
-            $policyModel = $policyMapObj->getPolicyMapDtl($id); 
+            $policyModel = $policyMapObj->getPolicyMapDtl($id);
+            //get MPLS LDP details 
             $mplsObj = new NddMplsLdpDetails();
             $mplsModel = $mplsObj->getMplsLdpDtl($id); 
+            //get interface details 
+            $interfaceObj = new NddInterfaceData();
+            $interfaceModel = $interfaceObj->getInterface($id);
+            
+//            echo'<pre>' ;
+//            print_r($interfaceBDIModel);
+//            die ; 
+            
             $suffix = $model->id . '-' . $model->sapid . '-' . $model->hostname;
 
             if ($version == '20.8') {
@@ -109,7 +125,7 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
             } else {
                 $reportFilename = 'NIP_Showrun_Report_' . $suffix . '.txt';
             }
-            $textContent = Yii::$app->controller->renderPartial('//ndd-output-master/reports/' . $version . '/_showrun_report_nip_html', array('model' => $model,'policyModel' => $policyModel,'mplsModel'=>$mplsModel), true);
+            $textContent = Yii::$app->controller->renderPartial('//ndd-output-master/reports/' . $version . '/_showrun_report_nip_html', array('model' => $model,'policyModel' => $policyModel,'mplsModel'=>$mplsModel,'interfaceModel'=>$interfaceModel), true);
             $NIPArray['textContent'] = $textContent;
             $NIPArray['fileName'] = $reportFilename;
             return $NIPArray;

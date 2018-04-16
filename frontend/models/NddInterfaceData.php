@@ -51,5 +51,20 @@ class NddInterfaceData extends \yii\db\ActiveRecord {
             'is_deleted' => 'Is Deleted',
         ];
     }
+    public function getInterface($output_master_id) {
+        $data = NddInterfaceData::find()->select('hostname,interface,bdi,description,dot1q_termination')
+                ->where(['output_master_id' => $output_master_id])
+                ->andWhere('bdi IS NULL') 
+                ->all();
+        return $data;        
+    }
+    public function getInterfaceBDI($output_master_id,$interface) {
+        $data = NddInterfaceData::find()->select('hostname,interface,bdi,description,dot1q_termination')
+                ->where(['output_master_id' => $output_master_id])
+                ->andWhere(['interface'=>$interface])
+                ->andWhere('bdi IS NOT NULL') 
+                ->all();
+        return $data;        
+    }
 
 }
