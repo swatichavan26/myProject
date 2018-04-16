@@ -110,4 +110,53 @@ class BuiltMasterNew extends \yii\base\Component {
         return $interface;
     }
 
+    public static function getIp($val) {
+        if (preg_match('/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', $val, $temp)) {
+            if (!empty($temp)) {
+                return $temp[0];
+            }
+        }
+        return "";
+    }
+
+    public function getBdiData($rows, &$key) {
+        $data = [];
+        if (!empty($rows)) {
+            while ($rows[$key] != '' AND $rows[$key] != '#') {
+                if (preg_match("/^interface Eth-Trunk/", $rows[$key])) {
+                    $explode = explode(".", $rows[$key]);
+                    if (!empty($explode)) {
+                        preg_match("|\d+|", trim($explode[0]), $temp);
+                        if (!empty($temp)) {
+                            $data['eth_trunk'] = $temp[0];
+                        }
+                        if (!empty($explode[1])) {
+                            $data['bdi'] = $explode[1];
+                        }
+                    }
+                }
+                if (preg_match("/^description/", trim($rows[$key])) AND ! empty($data)) {
+                    $data['description'] = trim(str_replace("description", "", $rows[$key]));
+                }
+                if (preg_match("/^ospf cost/", trim($rows[$key])) AND ! empty($data)) {
+                    $data['ospf_cost'] = trim(str_replace("ospf cost", "", $rows[$key]));
+                }
+                if (preg_match("/^ospf network-type/", trim($rows[$key])) AND ! empty($data)) {
+                    $data['ospf_network_type'] = trim(str_replace("ospf network-type", "", $rows[$key]));
+                }
+                if (preg_match("/^ip address /", trim($rows[$key])) AND ! empty($data)) {
+                    $data['ip_address'] = trim(str_replace("ip address", "", $rows[$key]));
+                }
+                if (preg_match("/^control-vid/", trim($rows[$key])) AND ! empty($data)) {
+                    preg_match("|\d+|", trim($rows[$key]), $temp);
+                    if (!empty($temp)) {
+                        $data['dot1q_termination_vid'] = $temp[0];
+                    }
+                }
+                $key++;
+            }
+        }
+        return $data;
+    }
+
 }

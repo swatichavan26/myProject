@@ -13,6 +13,9 @@ use common\components\CommonUtility;
 use app\models\NddPolicyMapDetails;
 use app\models\NddMplsLdpDetails;
 use frontend\models\NddInterfaceData;
+use yii\web\UploadedFile;
+use frontend\models\NddBdiDetails;
+
 /**
  * NddOutputMasterController implements the CRUD actions for NddOutputMaster model.
  */
@@ -38,7 +41,7 @@ class NddOutputMasterController extends Controller {
      */
     public function actionIndex() {
         $dataProvider = new ActiveDataProvider([
-            'query' => NddOutputMaster::find(),
+            'query' => NddOutputMaster::find()->andWhere(['is_active' => 1]),
         ]);
 
         return $this->render('index', [
@@ -124,101 +127,133 @@ class NddOutputMasterController extends Controller {
 
     public function actionUploadShowrun() {
         $model = new NddOutputMaster();
-        $fileName = "showrun.txt";
-        $showrunPath = Yii::$app->basePath . "/uploads/showruns/$fileName";
-        $contents = '';
-        if (file_exists($showrunPath)) {
-            $contents = file_get_contents($showrunPath);
+        if (!empty(Yii::$app->request->isPost)) {
+            $model->showrun_path = UploadedFile::getInstance($model, 'showrun_path');
+            $basePath = Yii::$app->basePath . "/uploads/showruns/";
+            $file_name = $model->showrun_path->baseName . "_" . time() . "." . $model->showrun_path->extension;
+            $model->showrun_path->saveAs($basePath . $file_name);
+//            $file_name = "showrun_1523874838.txt";
+            if (file_exists($basePath . $file_name)) {
+                $contents = file_get_contents($basePath . $file_name);
+            }
+            $qos_policy = [];
+            $data = [];
+            $mpls_ldp = [];
+            $interfaces = $bdis = [];
+            if (!empty($contents)) {
+                $rows = $model->parseTextFile($contents);
+                $dnsServer = 1;
+                foreach ($rows as $key => $value) {
+                    if (preg_match("/^sysname/", $rows[$key])) {
+                        $model->hostname = BuiltMasterNew::getHostname($rows[$key]);
+                    } elseif (preg_match("/^dns server/", $rows[$key]) && !preg_match("/^dns server source-ip /", $rows[$key])) {
+                        $model->{'dns_server_' . $dnsServer} = BuiltMasterNew::getReplacedValue($rows[$key], "dns server");
+                        $dnsServer++;
+                    } elseif (preg_match("/^interface LoopBack0/", $rows[$key])) {
+                        $key++;
+                        $model->loopback0_ipv4 = BuiltMasterNew::getLoopback($rows[$key]);
+                    } elseif (preg_match("/^info-center loghost/", $rows[$key])) {
+                        $model->loghost = BuiltMasterNew::getReplacedValue($rows[$key], "info-center loghost");
+                    } elseif (preg_match("/^qos-profile/", $rows[$key])) {
+                        $qos_profile = BuiltMasterNew::getReplacedValue($rows[$key], "qos-profile");
+                        $key++;
+                        $policies = BuiltMasterNew::getPolicyCir($rows[$key]);
+                        $policies['police_name'] = $qos_profile;
+                        $qos_policy[$qos_profile] = $policies;
+                    } elseif (preg_match("/hwtacacs-server authentication/", $rows[$key]) && preg_match("/secondary/", $rows[$key])) {
+                        $model->tacacs_secondary = BuiltMasterNew::getReplacedValue($rows[$key], "hwtacacs-server authentication");
+                        $model->tacacs_secondary = BuiltMasterNew::getReplacedValue($model->tacacs_secondary, "secondary");
+                    } elseif (preg_match("/hwtacacs-server authentication/", $rows[$key]) && !preg_match("/secondary/", $rows[$key])) {
+                        $model->tacacs_primary = BuiltMasterNew::getReplacedValue($rows[$key], "hwtacacs-server authentication");
+                    } elseif (preg_match("/mpls ldp remote-peer/", $rows[$key])) {
+                        $hostname = BuiltMasterNew::getReplacedValue($rows[$key], "mpls ldp remote-peer");
+                        $temp['remote_hostname'] = $hostname;
+                        $key++;
+                        $ip = BuiltMasterNew::getReplacedValue($rows[$key], "remote-ip");
+                        $temp['remote_ip'] = $ip;
+                        $mpls_ldp[] = $temp;
+                        $temp = [];
+                    } elseif (preg_match("/^interface GigabitEthernet/", $rows[$key]) OR preg_match("/^interface TenGigabitEthernet/", $rows[$key])) {
+                        $interface = BuiltMasterNew::getInterfaceData($rows, $key);
+                        $interfaces[] = $interface;
+                    } elseif (preg_match("/^dns domain/", trim($rows[$key]))) {
+                        $model->dns_domain_name = BuiltMasterNew::getReplacedValue($rows[$key], "dns domain");
+                    } elseif (preg_match("/^hwtacacs-server source-ip/", trim($rows[$key]))) {
+                        $model->tacacs_source_ip = BuiltMasterNew::getIp($rows[$key]);
+                    } elseif (preg_match("/^dns server source-ip/", trim($rows[$key]))) {
+                        $model->dns_server_source_ip = BuiltMasterNew::getIp($rows[$key]);
+                    } elseif (preg_match("/^hwtacacs-server shared-key cipher/", trim($rows[$key]))) {
+                        $model->tacacs_server_key = BuiltMasterNew::getReplacedValue($rows[$key], "hwtacacs-server shared-key cipher");
+                    } elseif (preg_match("/interface Eth-Trunk/", $rows[$key])) {
+                        $bdis[] = BuiltMasterNew::getBdiData($rows, $key);
+                    }
+                }
+            }
+            $model->showrun_path = $file_name;
+            Yii::$app->db->createCommand()
+                    ->update('ndd_output_master', ['is_active' => 0], ['hostname' => $model->hostname])
+                    ->execute();
+            if (!empty($model->hostname) AND ! empty($model->loopback0_ipv4)) {
+                $model->is_active = 1;
+                $model->created_at = date("Y-m-d H:i:s");
+                if ($model->save(false)) {
+                    if (!empty($qos_policy)) {
+                        foreach ($qos_policy as $qos_policy_dtl) {
+                            $policy_map_model = new NddPolicyMapDetails();
+                            foreach ($qos_policy_dtl as $key => $value) {
+                                $policy_map_model->$key = $value;
+                            }
+                            $policy_map_model->output_master_id = $model->id;
+                            $policy_map_model->hostname = $model->hostname;
+                            $policy_map_model->created_at = date("Y-m-d H:i:s");
+                            $policy_map_model->save(false);
+                        }
+                    }
+                    if (!empty($mpls_ldp)) {
+                        foreach ($mpls_ldp as $qos_policy_dtl) {
+                            $mpls_ldp_model = new NddMplsLdpDetails();
+                            foreach ($qos_policy_dtl as $key => $value) {
+                                $mpls_ldp_model->$key = $value;
+                            }
+                            $mpls_ldp_model->output_master_id = $model->id;
+                            $mpls_ldp_model->hostname = $model->hostname;
+                            $mpls_ldp_model->created_at = date("Y-m-d H:i:s");
+                            $mpls_ldp_model->save(false);
+                        }
+                    }
+                    if (!empty($interfaces)) {
+                        foreach ($interfaces as $interfaces_dtl) {
+                            $nddInterfaceModel = new NddInterfaceData();
+                            foreach ($interfaces_dtl as $key => $value) {
+                                $nddInterfaceModel->$key = $value;
+                            }
+                            $nddInterfaceModel->output_master_id = $model->id;
+                            $nddInterfaceModel->hostname = $model->hostname;
+                            $nddInterfaceModel->created_at = date("Y-m-d H:i:s");
+                            $nddInterfaceModel->save(false);
+                        }
+                    }
+                    if (!empty($bdis)) {
+                        foreach ($bdis as $bdis_dtl) {
+                            $nddBdiModel = new NddBdiDetails();
+                            foreach ($bdis_dtl as $key => $value) {
+                                $nddBdiModel->$key = $value;
+                            }
+                            $nddBdiModel->output_master_id = $model->id;
+                            $nddBdiModel->hostname = $model->hostname;
+                            $nddBdiModel->created_at = date("Y-m-d H:i:s");
+                            $nddBdiModel->save(false);
+                        }
+                    }
+                }
+            }
+            return $this->redirect(['index']);
+        } else {
+            return $this->render('upload', [
+                        'model' => $model,
+            ]);
         }
-        $qos_policy = [];
-        $data = [];
-        $mpls_ldp = [];
-        $interfaces = [];
 
-        if (!empty($contents)) {
-            $rows = $model->parseTextFile($contents);
-            $dnsServer = 1;
-            foreach ($rows as $key => $value) {
-                if (preg_match("/^sysname/", $rows[$key])) {
-                    $model->hostname = BuiltMasterNew::getHostname($rows[$key]);
-                } elseif (preg_match("/^dns server/", $rows[$key]) && !preg_match("/^dns server source-ip /", $rows[$key])) {
-                    $model->{'dns_server_' . $dnsServer} = BuiltMasterNew::getReplacedValue($rows[$key], "dns server");
-                    $dnsServer++;
-                } elseif (preg_match("/^interface LoopBack0/", $rows[$key])) {
-                    $key++;
-                    $model->loopback0_ipv4 = BuiltMasterNew::getLoopback($rows[$key]);
-                } elseif (preg_match("/^info-center loghost/", $rows[$key])) {
-                    $model->loghost = BuiltMasterNew::getReplacedValue($rows[$key], "info-center loghost");
-                } elseif (preg_match("/^qos-profile/", $rows[$key])) {
-                    $qos_profile = BuiltMasterNew::getReplacedValue($rows[$key], "qos-profile");
-                    $key++;
-                    $policies = BuiltMasterNew::getPolicyCir($rows[$key]);
-                    $policies['police_name'] = $qos_profile;
-                    $qos_policy[$qos_profile] = $policies;
-                } elseif (preg_match("/hwtacacs-server authentication/", $rows[$key]) && preg_match("/secondary/", $rows[$key])) {
-                    $model->tacacs_secondary = BuiltMasterNew::getReplacedValue($rows[$key], "hwtacacs-server authentication");
-                    $model->tacacs_secondary = BuiltMasterNew::getReplacedValue($model->tacacs_secondary, "secondary");
-                } elseif (preg_match("/hwtacacs-server authentication/", $rows[$key]) && !preg_match("/secondary/", $rows[$key])) {
-                    $model->tacacs_primary = BuiltMasterNew::getReplacedValue($rows[$key], "hwtacacs-server authentication");
-                } elseif (preg_match("/mpls ldp remote-peer/", $rows[$key])) {
-                    $hostname = BuiltMasterNew::getReplacedValue($rows[$key], "mpls ldp remote-peer");
-                    $temp['remote_hostname'] = $hostname;
-                    $key++;
-                    $ip = BuiltMasterNew::getReplacedValue($rows[$key], "remote-ip");
-                    $temp['remote_ip'] = $ip;
-                    $mpls_ldp[] = $temp;
-                    $temp = [];
-                } elseif (preg_match("/^interface GigabitEthernet/", $rows[$key]) OR preg_match("/^interface TenGigabitEthernet/", $rows[$key])) {
-                    $interface = BuiltMasterNew::getInterfaceData($rows, $key);
-                    $interfaces[] = $interface;
-                }
-            }
-        }
-        Yii::$app->db->createCommand()
-                ->update('ndd_output_master', ['is_active' => 0], ['hostname' => $model->hostname])
-                ->execute();
-        if (!empty($model)) {
-            $model->is_active = 1;
-            $model->created_at = date("Y-m-d H:i:s");
-            if ($model->save(false)) {
-                if (!empty($qos_policy)) {
-                    foreach ($qos_policy as $qos_policy_dtl) {
-                        $policy_map_model = new NddPolicyMapDetails();
-                        foreach ($qos_policy_dtl as $key => $value) {
-                            $policy_map_model->$key = $value;
-                        }
-                        $policy_map_model->output_master_id = $model->id;
-                        $policy_map_model->hostname = $model->hostname;
-                        $policy_map_model->created_at = date("Y-m-d H:i:s");
-                        $policy_map_model->save(false);
-                    }
-                }
-                if (!empty($mpls_ldp)) {
-                    foreach ($mpls_ldp as $qos_policy_dtl) {
-                        $mpls_ldp_model = new NddMplsLdpDetails();
-                        foreach ($qos_policy_dtl as $key => $value) {
-                            $mpls_ldp_model->$key = $value;
-                        }
-                        $mpls_ldp_model->output_master_id = $model->id;
-                        $mpls_ldp_model->hostname = $model->hostname;
-                        $mpls_ldp_model->created_at = date("Y-m-d H:i:s");
-                        $mpls_ldp_model->save(false);
-                    }
-                }
-                if (!empty($interfaces)) {
-                    foreach ($interfaces as $interfaces_dtl) {
-                        $nddInterfaceModel = new NddInterfaceData();
-                        foreach ($interfaces_dtl as $key => $value) {
-                            $nddInterfaceModel->$key = $value;
-                        }
-                        $nddInterfaceModel->output_master_id = $model->id;
-                        $nddInterfaceModel->hostname = $model->hostname;
-                        $nddInterfaceModel->created_at = date("Y-m-d H:i:s");
-                        $nddInterfaceModel->save(false);
-                    }
-                }
-            }
-        }
         echo "Done";
     }
 
@@ -253,6 +288,13 @@ class NddOutputMasterController extends Controller {
                 exit();
             }
         }
+    }
+
+    public function actionUpload() {
+        $model = new NddOutputMaster();
+        return $this->render('upload', [
+                    'model' => $model,
+        ]);
     }
 
 }

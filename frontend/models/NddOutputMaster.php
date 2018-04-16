@@ -32,6 +32,7 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
             [['hostname', 'loopback0_ipv4', 'loopback999_ipv6', 'sap_id'], 'required'],
             [['hostname', 'loopback0_ipv4', 'sap_id'], 'string', 'max' => 30],
             [['loopback999_ipv6'], 'string', 'max' => 50],
+            [['showrun_path'], 'file', 'extensions' => 'txt, text'],
         ];
     }
 
