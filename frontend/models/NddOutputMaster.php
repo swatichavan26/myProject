@@ -114,9 +114,14 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
             //get interface details 
             $interfaceObj = new NddInterfaceData();
             $interfaceModel = $interfaceObj->getInterface($id);
+            //get interface BDI  details 
+            $BDIL2Model = $interfaceObj->getBDIL2($id);
+            $BDIL3Model = $interfaceObj->getBDIL3($id);
+            
             
 //            echo'<pre>' ;
-//            print_r($interfaceBDIModel);
+//            print_r($BDIL3Model);
+//            print_r($BDIL2Model);
 //            die ; 
             
             $suffix = $model->id . '-' . $model->sapid . '-' . $model->hostname;
@@ -126,7 +131,7 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
             } else {
                 $reportFilename = 'NIP_Showrun_Report_' . $suffix . '.txt';
             }
-            $textContent = Yii::$app->controller->renderPartial('//ndd-output-master/reports/' . $version . '/_showrun_report_nip_html', array('model' => $model,'policyModel' => $policyModel,'mplsModel'=>$mplsModel,'interfaceModel'=>$interfaceModel), true);
+            $textContent = Yii::$app->controller->renderPartial('//ndd-output-master/reports/' . $version . '/_showrun_report_nip_html', array('model' => $model,'policyModel' => $policyModel,'mplsModel'=>$mplsModel,'interfaceModel'=>$interfaceModel,'BDIL3Model'=>$BDIL3Model,'BDIL2Model'=>$BDIL2Model), true);
             $NIPArray['textContent'] = $textContent;
             $NIPArray['fileName'] = $reportFilename;
             return $NIPArray;

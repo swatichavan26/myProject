@@ -66,5 +66,21 @@ class NddInterfaceData extends \yii\db\ActiveRecord {
                 ->all();
         return $data;        
     }
+    
+    public function getBDIL2($output_master_id) {
+        $data = NddBdiDetails::find()->select('hostname,eth_trunk,bdi,description,dot1q_termination_vid,ip_address,ospf_cost,ospf_network_type')
+                ->where(['output_master_id' => $output_master_id])
+                ->andWhere(['!=', 'bdi', 0])
+                ->all();
+        return $data;         
+    }
+    public function getBDIL3($output_master_id) {
+        $data = NddBdiDetails::find()->select('hostname,eth_trunk,bdi,description,dot1q_termination_vid,ip_address,ospf_cost,ospf_network_type')
+                ->where(['output_master_id' => $output_master_id])
+                ->andWhere(['bdi' => 0])
+                ->all();
+        return $data;         
+    }
+    
 
 }

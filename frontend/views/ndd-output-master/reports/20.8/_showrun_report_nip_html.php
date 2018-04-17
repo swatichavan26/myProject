@@ -124,69 +124,69 @@
 <?php } ?> 
 <?php } ?>
 
+ <?php if(!empty($BDIL2Model)){
+     $j=1 ; 
+        foreach ($BDIL2Model as $key => $BDIL2) {  ?> 
+            <p>interface BDI<?php echo $BDIL2->bdi; ?></p>
+            <p>description <?php echo $BDIL2->description; ?></p>
+            <p>ip address <?php echo $BDIL2->ip_address; ?></p>
+            <p>ip ospf cost <?php echo $BDIL2->ospf_cost; ?></p>
+            <?php if(!empty($BDIL2->ospf_network_type)){ ?>
+                <p>ip ospf network point-to-point </p>
+            <?php } ?>            
+            <p>ip ospf 1 area <AREA_ID> </p>
+            <p>mpls ldp igp sync delay 60 </p>
+            <p>mtu 9198</p>
+            <p>mpls ip</p>
+            <p>bfd interval 200 min_rx 200 multiplier 3</p>
+            <p>no bfd echo</p>
+            <p>! </p>
+            <p>Inter port-channel <?php echo $BDIL2->eth_trunk; ?></p>
+            <p>description <?php echo $BDIL2->description; ?></p>
+            <p>lacp max-bundle 1</p>
+            <p>!</p>
+            <p>service instance <?php echo $j; ?> ethernet</p>
+            <p>description EFP for LACP packets</p>
+            <p>encapsulation untagged</p>
+            <p>l2protocol peer</p>
+            <p>bridge-domain <?php echo $BDIL2->eth_trunk; ?></p>
+            <p>! </p>
+            <p>service instance <?php echo $j; ?> ethernet</p>
+            <p>encapsulation dot1q <?php echo $BDIL2->dot1q_termination_vid; ?></p>
+            <p>rewrite ingress tag pop 1 symmetric</p>
+            <p>bridge-domain <?php echo $BDIL2->bdi; ?></p>
+            <p>! </p>
 
-<p>l2 vfi CPE_Management_22SM_2NHW  manual</p>
-<p>vpn id 4392</p>
-<p>bridge-domain 4088</p>
-<p>neighbor 10.115.32.2  encapsulation mpls</p>
-<p>neighbor 10.115.32.2  encapsulation mpls</p>
-<p>!</p>
+ <?php $j++ ;  } } ?> 
+
+ <?php if(!empty($BDIL3Model)){
+        $k=1 ; 
+        foreach ($BDIL3Model as $key => $BDIL3) {  ?> 
+            <p>Inter port-channel <?php echo $BDIL3->eth_trunk; ?></p>
+            <p>description <?php echo $BDIL3->description; ?></p>
+            <p>ip address <?php echo $BDIL3->ip_address; ?></p>
+            <p>ip ospf cost <?php echo $BDIL3->ospf_cost; ?></p>
+            <?php if(!empty($BDIL3->ospf_network_type)){ ?>
+                <p>ip ospf network point-to-point </p>
+            <?php } ?> 
+            <p>ip ospf 1 area <AREA_ID> </p>
+            <p>mpls ldp igp sync delay 60 </p>
+            <p>mtu 9198</p>
+            <p>mpls ip</p>
+            <p>bfd interval 200 min_rx 200 multiplier 3</p>
+            <p>no bfd echo</p>
+            <p>lacp max-bundle 1</p>
+            <p>!</p>
+            <p>service instance <?php echo $k; ?> ethernet</p>
+            <p>description EFP for LACP packets</p>
+            <p>encapsulation untagged</p>
+            <p>l2protocol peer</p>
+            <p>bridge-domain <?php echo $BDIL3->eth_trunk; ?></p>
+            <p>! </p>
+            <p>!</p>
+ <?php $k++ ;  } } ?> 
 
 
-
-
-<p>!</p>
-<p>l2 vfi < VFI NAME > manual</p>
-<p>vpn id < ID ></p>
-<p>bridge-domain < ID ></p>
-<p>neighbor < IP NEIGHBOR > encapsulation mpls</p>
-<p>neighbor < IP NEIGHBOR > encapsulation mpls</p>
-<p>neighbor < IP NEIGHBOR > encapsulation mpls</p>
-<p>bridge-domain < bd-id></p>
-<p>!</p>
-<p>service instance < si-id > ethernet</p>
-<p>description <DESCRIPTION></p>
-<p>encapsulation dot1q  < vlan  > second-dot1q < vlan ></p>
-<p>rewrite ingress tag pop 1 symmetric</p>
-<p>bridge-domain < bd-id ></p>
-<p>!</p>
-
-<!--<p>------------------------------------------------------------</p>-->
-<p>!</p>
-<p>interface BDI< XX ></p>
-<p>description < DESCRIPTION ></p>
-<p>ip address <IP ADDRESS> <NETWORK MASK></p>
-<p>ip ospf cost 1000</p>
-<p>ip ospf network point-to-point</p>
-<p>ip ospf 1 area <AREA_ID></p>
-<p>mpls ldp igp sync delay 60</p>
-<p>mtu 9198</p>
-<p>mpls ip</p>
-<p>bfd interval 200 min_rx 200 multiplier 3</p>
-<p>no bfd echo</p>
-<p>!</p>
-<p>Inter port-channel < X ></p>
-<p>lacp max-bundle 1</p>
-<p>!</p>
-<p>service instance < id > ethernet</p>
-<p>description EFP for LACP packets</p>
-<p>encapsulation untagged</p>
-<p>l2protocol peer</p>
-<p>bridge-domain < bd id ></p>
-<p>!</p>
-<p>service instance 11 ethernet</p>
-<p>encapsulation dot1q < vlan ></p>
-<p>rewrite ingress tag pop 1 symmetric</p>
-<p>bridge-domain < bd id ></p>
-<p>!</p>
-<!--<p>-----------------------------------------------</p>-->
-<p>!</p>
-<p>interface GigabitEthernet< X/X/X ></p>
-<p>description < DESCRIPTION ></p>
-<p>no shutdown</p>
-<p>load-interval 30</p>
-<p>synchronous mode</p>
-<p>!</p>
 <!--<p>----------------------------------------------------------</p>-->
 <p>!</p>
 <p>line con 0</p>
