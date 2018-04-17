@@ -134,8 +134,7 @@ class NddOutputMasterController extends Controller {
             if (!empty($model->showrun_path)) {
                 $basePath = Yii::$app->basePath . "/uploads/showruns/";
                 $file_name = $model->showrun_path->baseName . "_" . time() . "." . $model->showrun_path->extension;
-                $file_name = "showrun_1523890755.txt";
-//                $model->showrun_path->saveAs($basePath . $file_name);
+                $model->showrun_path->saveAs($basePath . $file_name);
                 if (file_exists($basePath . $file_name)) {
                     $contents = file_get_contents($basePath . $file_name);
                 }
@@ -222,6 +221,11 @@ class NddOutputMasterController extends Controller {
             Yii::$app->db->createCommand()
                     ->update('ndd_output_master', ['is_active' => 0], ['hostname' => $model->hostname])
                     ->execute();
+            if (!empty($model->user_hostname)) {
+                Yii::$app->db->createCommand()
+                        ->update('ndd_output_master', ['is_active' => 0], ['user_hostname' => $model->user_hostname])
+                        ->execute();
+            }
             if (!empty($model->hostname) AND ! empty($model->loopback0_ipv4)) {
                 $model->is_active = 1;
                 $model->created_at = date("Y-m-d H:i:s");
@@ -330,6 +334,24 @@ class NddOutputMasterController extends Controller {
                 echo $textContent;
                 exit();
             }
+        }
+    }
+
+    public function actionGetFile($id, $fileName, $flag = 1) {
+        $showrunPath = Yii::$app->basePath . "/uploads/showruns/$fileName";
+        $contents = "";
+        if (file_exists($showrunPath)) {
+            $contents = file_get_contents($showrunPath);
+        } else {
+            echo 'File Not Found';
+        }
+
+        if ($flag == 1) {
+            return $this->render("view_file", [
+                        'contents' => $contents]);
+        } else {
+            return $this->renderPartial("view_file", [
+                        'contents' => $contents]);
         }
     }
 
