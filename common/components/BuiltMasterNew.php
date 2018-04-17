@@ -25,7 +25,7 @@ class BuiltMasterNew extends \yii\base\Component {
         return trim(str_replace("$replace", "", $value));
     }
 
-    public function getPolicyCir($value) {
+    public static function getPolicyCir($value) {
         $data = [];
         if (!empty($value)) {
             preg_match('/cir [0-9]+/', trim($value), $rem_host);
@@ -125,7 +125,7 @@ class BuiltMasterNew extends \yii\base\Component {
         return "";
     }
 
-    public function getBdiData($rows, &$key) {
+    public static function getBdiData($rows, &$key) {
         $data = [];
         if (!empty($rows)) {
             while ($rows[$key] != '' AND $rows[$key] != '#') {
