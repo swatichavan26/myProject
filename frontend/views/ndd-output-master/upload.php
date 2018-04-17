@@ -105,7 +105,7 @@ if (isset($model->topology_type)) {
 
         $(document.body).on('change', '#enterprise_type', function () {
             var val1 = $('#enterprise_type').val();
-            alert(val1);
+            //alert(val1);
             if (val1 == 'Yes') {
                 $('#entYes').show();
                 $('#entNo').hide();
