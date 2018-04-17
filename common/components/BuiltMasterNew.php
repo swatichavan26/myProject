@@ -48,7 +48,7 @@ class BuiltMasterNew extends \yii\base\Component {
         return $data;
     }
 
-    public function getLoopback($value) {
+    public static function getLoopback($value) {
         $loopback = '';
         if (!empty($value)) {
             preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", trim($value), $temp);
@@ -59,7 +59,7 @@ class BuiltMasterNew extends \yii\base\Component {
         return $loopback;
     }
 
-    public function getInterfaceData($rows, &$key) {
+    public static function getInterfaceData($rows, &$key) {
         $interface = [];
         $gigabitEthr = "";
         if (!empty($rows)) {
