@@ -24,57 +24,65 @@ if (isset($model->topology_type)) {
     <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
     <?= $form->errorSummary($model); ?>
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-4">
             <div class="form-group"><?= $form->field($model, 'user_hostname') ?></div>
             <div class="form-group"><?= $form->field($model, 'user_loopback0') ?></div>
             <div class="form-group"><?= $form->field($model, 'enterprise_type')->dropDownList(['Yes' => 'Yes', 'No' => 'No'], ['id' => 'enterprise_type', 'prompt' => 'Select']); ?></div>
+            <div id='entNo'><div class="form-group"><?= $form->field($model, 'showrun_path')->fileInput() ?></div></div>
+        </div>
+        
+        <div id='entYes'>
+        <div class="col-lg-8">
+            <div class="row" id='topologyDiv'>
+                <div class="col-lg-6">
+                    <div class="form-group"><?= $form->field($model, 'topology_type')->dropDownList(['Ring' => 'Ring', 'Spur' => 'Spur'], ['id' => 'topology', 'prompt' => 'Select']); ?></div>
+                </div>
+            </div>
+            
+            <div class="row" id='ringDiv'>
+                <div class="col-lg-6">
+                    <div class="form-group"><?= $form->field($model, 'east_ngbr_hostname') ?></div>
+                    <div class="form-group"><?= $form->field($model, 'east_ngbr_loopback') ?></div>
+                    <div class="form-group"><?= $form->field($model, 'east_ptp_ip') ?></div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group"><?= $form->field($model, 'west_ngbr_hostname') ?></div>
+                    <div class="form-group"><?= $form->field($model, 'west_ngbr_loopback') ?></div>
+                    <div class="form-group"><?= $form->field($model, 'west_ptp_ip') ?></div>
+                </div>
+            </div>
+            
+            <div class="row" id='SpurDiv' style="<?php echo $displaySpur; ?>">
+                <div class="col-lg-6">
+                    <div class="form-group"><?= $form->field($model, 'takeoff_hostname') ?></div>
+                    <div class="form-group"><?= $form->field($model, 'takeoff_loopback') ?></div>
+                    <div class="form-group"><?= $form->field($model, 'takeoff_ptp_ip') ?></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">            
+                    <div class="form-group"><?= $form->field($model, 'east_da_hostname') ?></div>
+                    <div class="form-group"><?= $form->field($model, 'east_da_loopback') ?></div>
+                </div>
+                <div class="col-lg-6">            
+                    <div class="form-group"><?= $form->field($model, 'west_da_hostname') ?></div>
+                    <div class="form-group"><?= $form->field($model, 'west_da_loopback') ?></div>
+                </div>
+            </div>
+        </div>
+        
         </div>
     </div>
 
-    <div class="row" id='entNo'>
-        <div class="col-lg-6">
-            <div class="form-group"><?= $form->field($model, 'showrun_path')->fileInput() ?></div>            
-        </div>
-    </div>
+    
 
-    <div id='entYes'>
+    <div>
 
-        <div class="row" id='topologyDiv'>
-            <div class="col-lg-6">
-                <div class="form-group"><?= $form->field($model, 'topology_type')->dropDownList(['Ring' => 'Ring', 'Spur' => 'Spur'], ['id' => 'topology', 'prompt' => 'Select']); ?></div>
-            </div>
-        </div>
+        
 
-        <div class="row" id='ringDiv'>
-            <div class="col-lg-6">
-                <div class="form-group"><?= $form->field($model, 'east_ngbr_hostname') ?></div>
-                <div class="form-group"><?= $form->field($model, 'east_ngbr_loopback') ?></div>
-                <div class="form-group"><?= $form->field($model, 'east_ptp_ip') ?></div>
-            </div>
-            <div class="col-lg-6">
-                <div class="form-group"><?= $form->field($model, 'west_ngbr_hostname') ?></div>
-                <div class="form-group"><?= $form->field($model, 'west_ngbr_loopback') ?></div>
-                <div class="form-group"><?= $form->field($model, 'west_ptp_ip') ?></div>
-            </div>
-        </div>   
+          
 
-        <div class="row" id='SpurDiv' style="<?php echo $displaySpur; ?>">
-            <div class="col-lg-6">
-                <div class="form-group"><?= $form->field($model, 'takeoff_hostname') ?></div>
-                <div class="form-group"><?= $form->field($model, 'takeoff_loopback') ?></div>
-                <div class="form-group"><?= $form->field($model, 'takeoff_ptp_ip') ?></div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-6">            
-                <div class="form-group"><?= $form->field($model, 'east_da_hostname') ?></div>
-                <div class="form-group"><?= $form->field($model, 'east_da_loopback') ?></div>
-            </div>
-            <div class="col-lg-6">            
-                <div class="form-group"><?= $form->field($model, 'west_da_hostname') ?></div>
-                <div class="form-group"><?= $form->field($model, 'west_da_loopback') ?></div>
-            </div>
-        </div>
+        
 
     </div>
 
