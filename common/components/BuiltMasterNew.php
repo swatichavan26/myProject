@@ -102,6 +102,12 @@ class BuiltMasterNew extends \yii\base\Component {
                         }
                     }
                 }
+                if (preg_match("/^eth-trunk/", trim($rows[$key]))) {
+                    preg_match("|\d+|", trim($rows[$key]), $tmp);
+                    if (!empty($tmp)) {
+                        $interface['eth_trunk'] = trim($tmp[0]);
+                    }
+                }
 
 
                 $key++;
@@ -151,6 +157,40 @@ class BuiltMasterNew extends \yii\base\Component {
                     preg_match("|\d+|", trim($rows[$key]), $temp);
                     if (!empty($temp)) {
                         $data['dot1q_termination_vid'] = $temp[0];
+                    }
+                }
+                $key++;
+            }
+        }
+        return $data;
+    }
+
+    public static function getVsiData($rows, &$key) {
+        $data = [];
+        if (!empty($rows)) {
+            while ($rows[$key] != '' AND $rows[$key] != '#') {
+                if (preg_match("/^vsi/", $rows[$key])) {
+                    $explode = explode(" ", $rows[$key]);
+                    if (!empty($explode)) {
+                        $data['vsi_name'] = $explode[1];
+                    }
+                }
+                if (preg_match("/^description/", trim($rows[$key])) AND ! empty($data)) {
+                    $data['description'] = trim(str_replace("description", "", $rows[$key]));
+                }
+                if (preg_match("/^vsi-id/", trim($rows[$key])) AND ! empty($data)) {
+                    preg_match("|\d+|", trim($rows[$key]), $temp);
+                    if (!empty($temp))
+                        $data['vsi_id'] = trim($temp[0]);
+                }
+                if (preg_match("/^peer/", trim($rows[$key])) AND ! empty($data)) {
+                    if (preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", trim($rows[$key]), $temp)) {
+                        if (!empty($temp)) {
+                            if (empty($data['peer']))
+                                $data['peer'] = $temp[0];
+                            else
+                                $data['peer'] .= "," . $temp[0];
+                        }
                     }
                 }
                 $key++;

@@ -15,6 +15,7 @@ use frontend\models\NddMplsLdpDetails;
 use frontend\models\NddInterfaceData;
 use yii\web\UploadedFile;
 use frontend\models\NddBdiDetails;
+use frontend\models\NddVsiDetails;
 
 /**
  * NddOutputMasterController implements the CRUD actions for NddOutputMaster model.
@@ -133,7 +134,8 @@ class NddOutputMasterController extends Controller {
             if (!empty($model->showrun_path)) {
                 $basePath = Yii::$app->basePath . "/uploads/showruns/";
                 $file_name = $model->showrun_path->baseName . "_" . time() . "." . $model->showrun_path->extension;
-                $model->showrun_path->saveAs($basePath . $file_name);
+                $file_name = "showrun_1523890755.txt";
+//                $model->showrun_path->saveAs($basePath . $file_name);
                 if (file_exists($basePath . $file_name)) {
                     $contents = file_get_contents($basePath . $file_name);
                 }
@@ -158,7 +160,8 @@ class NddOutputMasterController extends Controller {
                         return $this->redirect(['index']);
                     }
                 }
-                echo "<pre/>",print_r($model->getErrors());die;
+                echo "<pre/>", print_r($model->getErrors());
+                die;
             }
             $qos_policy = [];
             $data = [];
@@ -210,6 +213,8 @@ class NddOutputMasterController extends Controller {
                         $model->tacacs_server_key = BuiltMasterNew::getReplacedValue($rows[$key], "hwtacacs-server shared-key cipher");
                     } elseif (preg_match("/interface Eth-Trunk/", $rows[$key])) {
                         $bdis[] = BuiltMasterNew::getBdiData($rows, $key);
+                    } elseif (preg_match("/^vsi/", $rows[$key]) AND preg_match("/static/", $rows[$key])) {
+                        $vsi[] = BuiltMasterNew::getVsiData($rows, $key);
                     }
                 }
             }
@@ -269,6 +274,18 @@ class NddOutputMasterController extends Controller {
                             $nddBdiModel->hostname = $model->hostname;
                             $nddBdiModel->created_at = date("Y-m-d H:i:s");
                             $nddBdiModel->save(false);
+                        }
+                    }
+                    if (!empty($vsi)) {
+                        foreach ($vsi as $vsi_dtl) {
+                            $nddVsiModel = new NddVsiDetails();
+                            foreach ($vsi_dtl as $key => $value) {
+                                $nddVsiModel->$key = $value;
+                            }
+                            $nddVsiModel->output_master_id = $model->id;
+                            $nddVsiModel->hostname = $model->hostname;
+                            $nddVsiModel->created_at = date("Y-m-d H:i:s");
+                            $nddVsiModel->save(false);
                         }
                     }
                 }
