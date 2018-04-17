@@ -17,6 +17,14 @@ if (isset($model->topology_type)) {
     }
 } else {
     $displaySpur = 'display:none;';
+    $displayRing = 'display:none;';
+}
+if (isset($model->enterprise_type)) {
+    $displayEnt = 'display:block;';
+}else{
+    $displayEnt = 'display:none;';
+    $displaySpur = 'display:none;';
+    $displayRing = 'display:none;';
 }
 ?>
 <h1>Create IP Pool</h1>
@@ -24,14 +32,18 @@ if (isset($model->topology_type)) {
     <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
     <?= $form->errorSummary($model); ?>
     <div class="row">
-        <div class="col-lg-4">
-            <div class="form-group"><?= $form->field($model, 'user_hostname') ?></div>
-            <div class="form-group"><?= $form->field($model, 'user_loopback0') ?></div>
-            <div class="form-group"><?= $form->field($model, 'enterprise_type')->dropDownList(['Yes' => 'Yes', 'No' => 'No'], ['id' => 'enterprise_type', 'prompt' => 'Select']); ?></div>
-            <div id='entNo'><div class="form-group"><?= $form->field($model, 'showrun_path')->fileInput() ?></div></div>
-        </div>
         
-        <div id='entYes'>
+        <div class="col-lg-4">
+            <div class="form-group"><?= $form->field($model, 'enterprise_type')->dropDownList(['Yes' => 'Yes', 'No' => 'No'], ['id' => 'enterprise_type', 'prompt' => 'Select']); ?></div>
+            <div id='entuser' style="<?php echo $displaySpur; ?>">
+                <div class="form-group"><?= $form->field($model, 'user_hostname') ?></div>
+                <div class="form-group"><?= $form->field($model, 'user_loopback0') ?></div>            
+                <div class="form-group"><?= $form->field($model, 'showrun_path')->fileInput() ?></div>
+            </div>
+        </div>
+            
+        
+        <div id='entYes' style="<?php echo $displaySpur; ?>">
         <div class="col-lg-8">
             <div class="row" id='topologyDiv'>
                 <div class="col-lg-6">
@@ -73,17 +85,7 @@ if (isset($model->topology_type)) {
         
         </div>
     </div>
-
-    
-
     <div>
-
-        
-
-          
-
-        
-
     </div>
 
     <div class="row">
@@ -116,10 +118,12 @@ if (isset($model->topology_type)) {
             //alert(val1);
             if (val1 == 'Yes') {
                 $('#entYes').show();
+                $('#entuser').show();
                 $('#entNo').hide();
             } else {
                 $('#entYes').hide();
                 $('#entNo').show();
+                $('#entuser').show();
             }
         });
     });
