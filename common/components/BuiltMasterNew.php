@@ -63,8 +63,7 @@ class BuiltMasterNew extends \yii\base\Component {
         $interface = [];
         $gigabitEthr = "";
         if (!empty($rows)) {
-            while ($rows[$key] != '' AND $rows[$key] != '#') {
-
+            while (trim($rows[$key]) != '' AND trim($rows[$key]) != '#') {
                 if (preg_match("/interface GigabitEthernet/", $rows[$key]) OR preg_match("/interface TenGigabitEthernet/", $rows[$key])) {
                     $phyGigInt = explode(' ', $rows[$key]);
                     $gigabit = explode(".", $phyGigInt[1]);
