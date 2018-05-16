@@ -1,0 +1,1 @@
+ALTER TABLE `ndd_interface_data` ADD `ospf_cost` INT(10) NOT NULL AFTER `eth_trunk`, ADD `ospf_network_type` VARCHAR(50) NULL DEFAULT NULL AFTER `ospf_cost`, ADD `ip_address` VARCHAR(50) NULL DEFAULT NULL AFTER `ospf_network_type`;

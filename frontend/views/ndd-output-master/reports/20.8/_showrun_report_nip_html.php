@@ -109,7 +109,27 @@ use frontend\models\NddInterfaceData; ?>
                                         <?php if (!empty($interface->description)) { ?>
                                             <p>description <?php echo $interface->description; ?></p>
                                         <?php } ?>
-                                        <p>no ip address</p>
+                                        <?php if (!empty($interface->ip_address)) { ?>
+                                            <p>ip address <?php echo $interface->ip_address; ?></p>
+                                        <?php } else { ?>   
+                                            <p>no ip address</p>
+                                        <?php } ?>
+                                        <?php if (!empty($interface->ospf_cost)) { ?>
+                                            <p>ip ospf cost <?php echo $interface->ospf_cost; ?></p>
+                                        <?php } ?>   
+                                        <?php if (!empty($interface->ospf_network_type)) { ?>
+                                            <p>ip ospf network point-to-point</p>
+                                        <?php } ?>   
+                                        <p>carrier-delay up msec 50</p>
+                                        <p>carrier-delay down msec 0</p>
+                                        <?php if (!empty($interface->eth_trunk)) { ?>
+                                            <p>channel-group <?php echo $interface->eth_trunk; ?> mode active</p>
+                                        <?php } ?>
+                                        <p>load-interval 30</p>
+                                        <p>service-policy input NNI_INGRESS</p>
+                                        <p>service-policy output NNI_EGRESS</p>
+                                        <p>synchronous mode</p>
+                                        <p>lacp rate fast</p>
                                         <p>no shutdown</p>
                                         <p>!</p>
                                         <?php

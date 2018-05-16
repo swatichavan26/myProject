@@ -32,8 +32,10 @@ class NddInterfaceData extends \yii\db\ActiveRecord {
             [['output_master_id', 'is_deleted'], 'required'],
             [['interface', 'bdi'], 'string', 'max' => 50],
             [['description'], 'string', 'max' => 200],
-            [['hostname'], 'string', 'max' => 50],
+            [['hostname', 'ospf_network_type', 'ip_address'], 'string', 'max' => 50],
             [['dot1q_termination'], 'string', 'max' => 100],
+            [['eth_trunk'], 'integer', 'max' => 10],
+            [['ospf_cost'], 'integer', 'max' => 10],
         ];
     }
 
@@ -51,36 +53,38 @@ class NddInterfaceData extends \yii\db\ActiveRecord {
             'is_deleted' => 'Is Deleted',
         ];
     }
+
     public function getInterface($output_master_id) {
+        $data = NddInterfaceData::find()->select('*')
+                ->where(['output_master_id' => $output_master_id])
+                ->andWhere('bdi IS NULL')
+                ->all();
+        return $data;
+    }
+
+    public function getInterfaceBDI($output_master_id, $interface) {
         $data = NddInterfaceData::find()->select('hostname,interface,bdi,description,dot1q_termination')
                 ->where(['output_master_id' => $output_master_id])
-                ->andWhere('bdi IS NULL') 
+                ->andWhere(['interface' => $interface])
+                ->andWhere('bdi IS NOT NULL')
                 ->all();
-        return $data;        
+        return $data;
     }
-    public function getInterfaceBDI($output_master_id,$interface) {
-        $data = NddInterfaceData::find()->select('hostname,interface,bdi,description,dot1q_termination')
-                ->where(['output_master_id' => $output_master_id])
-                ->andWhere(['interface'=>$interface])
-                ->andWhere('bdi IS NOT NULL') 
-                ->all();
-        return $data;        
-    }
-    
+
     public function getBDIL2($output_master_id) {
         $data = NddBdiDetails::find()->select('hostname,eth_trunk,bdi,description,dot1q_termination_vid,ip_address,ospf_cost,ospf_network_type')
                 ->where(['output_master_id' => $output_master_id])
                 ->andWhere(['!=', 'bdi', 0])
                 ->all();
-        return $data;         
+        return $data;
     }
+
     public function getBDIL3($output_master_id) {
         $data = NddBdiDetails::find()->select('hostname,eth_trunk,bdi,description,dot1q_termination_vid,ip_address,ospf_cost,ospf_network_type')
                 ->where(['output_master_id' => $output_master_id])
                 ->andWhere(['bdi' => 0])
                 ->all();
-        return $data;         
+        return $data;
     }
-    
 
 }

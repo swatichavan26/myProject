@@ -77,6 +77,15 @@ class BuiltMasterNew extends \yii\base\Component {
                 if (preg_match("/^description/", trim($rows[$key])) AND ! empty($interface)) {
                     $interface['description'] = trim(str_replace("description", "", $rows[$key]));
                 }
+                if (preg_match("/^ospf cost/", trim($rows[$key])) AND ! empty($interface)) {
+                    $interface['ospf_cost'] = trim(str_replace("ospf cost", "", $rows[$key]));
+                }
+                if (preg_match("/^ospf network-type/", trim($rows[$key])) AND ! empty($interface)) {
+                    $interface['ospf_network_type'] = trim(str_replace("ospf network-type", "", $rows[$key]));
+                }
+                if (preg_match("/^ip address /", trim($rows[$key])) AND ! empty($interface)) {
+                    $interface['ip_address'] = trim(str_replace("ip address", "", $rows[$key]));
+                }
                 if (preg_match("/^control-vid \d{1,}/", trim($rows[$key]), $match) AND ! empty($interface)) {
                     preg_match("|\d+|", trim($match[0]), $tmp);
                     if (!empty($tmp) AND isset($tmp[0]))
@@ -101,7 +110,7 @@ class BuiltMasterNew extends \yii\base\Component {
                         }
                     }
                 }
-                if (preg_match("/^eth-trunk/", trim($rows[$key]))) {
+                if (preg_match("/^eth-trunk/", trim($rows[$key])) AND ! empty($interface)) {
                     preg_match("|\d+|", trim($rows[$key]), $tmp);
                     if (!empty($tmp)) {
                         $interface['eth_trunk'] = trim($tmp[0]);
@@ -127,16 +136,16 @@ class BuiltMasterNew extends \yii\base\Component {
     public static function getBdiData($rows, &$key) {
         $data = [];
         if (!empty($rows)) {
-            while ($rows[$key] != '' AND $rows[$key] != '#') {
+            while (trim($rows[$key]) != '' AND trim($rows[$key]) != '#') {
                 if (preg_match("/^interface Eth-Trunk/", $rows[$key])) {
                     $explode = explode(".", $rows[$key]);
                     if (!empty($explode)) {
                         preg_match("|\d+|", trim($explode[0]), $temp);
                         if (!empty($temp)) {
-                            $data['eth_trunk'] = $temp[0];
+                            $data['eth_trunk'] = $temp[0] + 1;
                         }
                         if (!empty($explode[1])) {
-                            $data['bdi'] = $explode[1];
+                            $data['bdi'] = $data['eth_trunk'] . substr($explode[1], 0, 1);
                         }
                     }
                 }
