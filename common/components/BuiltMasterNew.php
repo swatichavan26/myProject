@@ -86,6 +86,27 @@ class BuiltMasterNew extends \yii\base\Component {
                 if (preg_match("/^ip address /", trim($rows[$key])) AND ! empty($interface)) {
                     $interface['ip_address'] = trim(str_replace("ip address", "", $rows[$key]));
                 }
+                if (preg_match("/^l2 binding vsi /", trim($rows[$key])) AND ! empty($interface)) {
+                    $interface['l2_binding_vsi'] = trim(str_replace("l2 binding vsi", "", $rows[$key]));
+                }
+                if (preg_match("/^undo shutdown/", trim($rows[$key])) AND ! empty($interface)) {
+                    $interface['shutdown_status'] = "no shutdown";
+                }
+                if (preg_match("/^shutdown/", trim($rows[$key])) AND ! empty($interface)) {
+                    $interface['shutdown_status'] = "shutdown";
+                }
+                if (preg_match("/^ospf timer hello/", trim($rows[$key]), $match) AND ! empty($interface)) {
+                    preg_match("|\d+|", trim($match[0]), $tmp);
+                    if (isset($tmp[0]) && !empty($tmp[0])) {
+                        $interface['ospf_time_hello'] = $tmp[0];
+                    }
+                }
+                if (preg_match("/^ospf timer dead/", trim($rows[$key]), $match) AND ! empty($interface)) {
+                    preg_match("|\d+|", trim($match[0]), $tmp);
+                    if (isset($tmp[0]) && !empty($tmp[0])) {
+                        $interface['ospf_time_dead'] = $tmp[0];
+                    }
+                }
                 if (preg_match("/^control-vid \d{1,}/", trim($rows[$key]), $match) AND ! empty($interface)) {
                     preg_match("|\d+|", trim($match[0]), $tmp);
                     if (!empty($tmp) AND isset($tmp[0]))
@@ -110,7 +131,7 @@ class BuiltMasterNew extends \yii\base\Component {
                         }
                     }
                 }
-                if (preg_match("/^eth-trunk/", trim($rows[$key])) AND ! empty($interface)) {
+                if (preg_match("/^eth-trunk/", trim($rows[$key]), $tmp) AND ! empty($interface)) {
                     preg_match("|\d+|", trim($rows[$key]), $tmp);
                     if (!empty($tmp)) {
                         $interface['eth_trunk'] = trim($tmp[0]);
@@ -176,7 +197,7 @@ class BuiltMasterNew extends \yii\base\Component {
     public static function getVsiData($rows, &$key) {
         $data = [];
         if (!empty($rows)) {
-            while ($rows[$key] != '' AND $rows[$key] != '#') {
+            while (trim($rows[$key]) != '' AND trim($rows[$key]) != '#') {
                 if (preg_match("/^vsi/", $rows[$key])) {
                     $explode = explode(" ", $rows[$key]);
                     if (!empty($explode)) {

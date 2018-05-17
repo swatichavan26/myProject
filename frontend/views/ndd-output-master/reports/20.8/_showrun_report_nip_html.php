@@ -76,193 +76,233 @@ use frontend\models\NddInterfaceData; ?>
                             <p>tacacs-server key <?php echo $model->tacacs_server_key ?></p>
                             <p>ip tacacs source-interface <?php echo $model->tacacs_source_ip ?></p>
                             <p>!</p>
-                            <p>username < username > privilege 15 secret <password></p>
-                                <p>!</p>
-                                <p>ip ftp source-interface Loopback< X ></p>
-                                <p>ip ftp username < username ></p>
-                                <p>ip ftp password 0 < password ></p>
-                                <p>!</p>
-                                <p>mpls label protocol ldp</p>
-                                <p>mpls ldp nsr</p>
-                                <p>mpls ldp graceful-restart</p>
-                                <p>mpls ldp session protection</p>
-                                <p>mpls ldp igp sync holddown 60000</p>
-                                <p>mpls ldp discovery targeted-hello accept</p>
-                                <p>mpls ldp sync</p>
-                                <p>mpls ldp router-id <?php echo $model->loopback0_ipv4 ?> force</p>
-                                <p>!</p>
+                            <p>username < username > privilege 15 secret <password/></p>
+                            <p>!</p>
+                            <p>ip ftp source-interface Loopback< X ></p>
+                            <p>ip ftp username < username ></p>
+                            <p>ip ftp password 0 < password ></p>
+                            <p>!</p>
+                            <p>mpls label protocol ldp</p>
+                            <p>mpls ldp nsr</p>
+                            <p>mpls ldp graceful-restart</p>
+                            <p>mpls ldp session protection</p>
+                            <p>mpls ldp igp sync holddown 60000</p>
+                            <p>mpls ldp discovery targeted-hello accept</p>
+                            <p>mpls ldp sync</p>
+                            <p>mpls ldp router-id <?php echo $model->loopback0_ipv4 ?> force</p>
+                            <p>!</p>
 
-                                <?php
-                                if (!empty($mplsModel)) {
-                                    foreach ($mplsModel as $key => $mpls) {
-                                        ?> 
-                                        <p>mpls ldp neighbor <?php echo $mpls->remote_ip; ?> targeted ldp</p>
-                                        <p>!</p>
-                                    <?php } ?> 
-                                <?php } ?>
 
-                                <?php
-                                if (!empty($interfaceModel)) {
-                                    foreach ($interfaceModel as $key => $interface) {
-                                        ?> 
-                                        <p>interface <?php echo $interface->interface; ?></p>
-                                        <?php if (!empty($interface->description)) { ?>
-                                            <p>description <?php echo $interface->description; ?></p>
-                                        <?php } ?>
-                                        <?php if (!empty($interface->ip_address)) { ?>
-                                            <p>ip address <?php echo $interface->ip_address; ?></p>
-                                        <?php } else { ?>   
-                                            <p>no ip address</p>
-                                        <?php } ?>
-                                        <?php if (!empty($interface->ospf_cost)) { ?>
-                                            <p>ip ospf cost <?php echo $interface->ospf_cost; ?></p>
-                                        <?php } ?>   
-                                        <?php if (!empty($interface->ospf_network_type)) { ?>
-                                            <p>ip ospf network point-to-point</p>
-                                        <?php } ?>   
+                            <?php
+                            if (!empty($vsiModel)) {
+                                foreach ($vsiModel as $vsi) {
+                                    ?>
+                                    <p>l2 vfi <?php echo $vsi->vsi_name; ?> manual</p>
+                                    <p>desription <?php echo $vsi->description; ?> manual</p>
+                                    <p>vpn id <?php echo $vsi->vsi_id; ?></p>
+                                    <?php
+                                    if (!empty($vsi->peer)) {
+                                        $peers = explode(",", $vsi->peer);
+                                        foreach ($peers as $peer) {
+                                            ?>
+                                            <p>neighbor <?php echo $peer; ?> encapsulation mpls</p><br>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                    <p>bridge-domain <?= $vsi->getBridgeDomain($vsi->vsi_name, $vsi->output_master_id); ?></p>
+                                    <p>!</p>
+                                    <?php
+                                }
+                            }
+                            if (!empty($mplsModel)) {
+                                foreach ($mplsModel as $key => $mpls) {
+                                    ?> 
+                                    <p>mpls ldp neighbor <?php echo $mpls->remote_ip; ?> targeted ldp</p>
+                                    <p>!</p>
+                                <?php } ?> 
+                            <?php } ?>
+
+                            <?php
+                            if (!empty($interfaceModel)) {
+                                foreach ($interfaceModel as $key => $interface) {
+                                    ?> 
+                                    <p>interface <?php echo $interface->interface; ?></p>
+                                    <?php if (!empty($interface->description)) { ?>
+                                        <p>description <?php echo $interface->description; ?></p>
+                                    <?php } ?>
+                                    <?php if (!empty($interface->ip_address)) { ?>
+                                        <p>ip address <?php echo $interface->ip_address; ?></p>
+                                    <?php } else { ?>   
+                                        <p>no ip address</p>
+                                    <?php } ?>
+                                    <?php if (!empty($interface->ospf_cost)) { ?>
+                                        <p>ip ospf cost <?php echo $interface->ospf_cost; ?></p>
+                                    <?php } ?>   
+                                    <?php if (!empty($interface->ospf_network_type)) { ?>
+                                        <p>ip ospf network point-to-point</p>
+                                    <?php } ?>   
+                                    <?php if (!empty($interface->ospf_time_hello)) { ?>
+                                        <p>ospf timer hello <?php echo $interface->ospf_time_hello; ?></p>
+                                    <?php } ?>   
+                                    <?php if (!empty($interface->ospf_time_dead)) { ?>
+                                        <p>ospf timer hello <?php echo $interface->ospf_time_dead; ?></p>
+                                    <?php } ?>
+                                    <?php if (!empty($interface->ip_address)) { ?>
+                                        <p>mpls ip</p>
+                                        <p>ip mpls ldp igp sync delay 60</p>
+                                    <?php } ?>    
+                                    <?php if (!empty($interface->shutdown_status) AND $interface->shutdown_status == 'no shutdown') { ?>    
                                         <p>carrier-delay up msec 50</p>
                                         <p>carrier-delay down msec 0</p>
-                                        <?php if (!empty($interface->eth_trunk)) { ?>
-                                            <p>channel-group <?php echo $interface->eth_trunk; ?> mode active</p>
-                                        <?php } ?>
+                                    <?php } ?>
+                                    <?php if (!empty($interface->eth_trunk)) { ?>
+                                        <p>channel-group <?php echo $interface->eth_trunk + 1; ?> mode active</p>
+                                    <?php } ?>
+
+
+                                    <?php if (!empty($interface->shutdown_status) AND $interface->shutdown_status == 'no shutdown') { ?>
                                         <p>load-interval 30</p>
                                         <p>service-policy input NNI_INGRESS</p>
                                         <p>service-policy output NNI_EGRESS</p>
                                         <p>synchronous mode</p>
                                         <p>lacp rate fast</p>
-                                        <p>no shutdown</p>
-                                        <p>!</p>
-                                        <?php
-                                        //get interface BDI service instance details 
-                                        $interfaceObj = new NddInterfaceData();
-                                        $interfaceBDIModel = $interfaceObj->getInterfaceBDI($model->id, $interface->interface);
-                                        $i = 1;
-                                        foreach ($interfaceBDIModel as $interfaceBDI) {
-                                            $dot1qArr = explode(',', $interfaceBDI->dot1q_termination);
-                                            ?>
-                                            <p>service instance <?php echo $i ?> ethernet</p>
-                                            <p>description <?php echo $interfaceBDI->description; ?></p>
-                                            <p>encapsulation dot1q  <?php
-                                                echo $dot1qArr[0];
-                                                if (isset($dot1qArr[1])) {
-                                                    ?> second-dot1q <?php
-                                                    echo $dot1qArr[1];
-                                                }
-                                                ?></p>
-                                            <p>rewrite ingress tag pop 1 symmetric</p>
-                                            <p>bridge-domain <?php echo $interfaceBDI->bdi; ?></p>
-                                            <p>!</p>
+                                    <?php } ?>
 
-                                            <?php
-                                            $i++;
-                                        }
+
+                                    <p><?php echo $interface->shutdown_status; ?></p>
+                                    <p>!</p>
+                                    <?php
+                                    //get interface BDI service instance details 
+                                    $interfaceObj = new NddInterfaceData();
+                                    $interfaceBDIModel = $interfaceObj->getInterfaceBDI($model->id, $interface->interface);
+                                    $i = 1;
+                                    foreach ($interfaceBDIModel as $interfaceBDI) {
+                                        $dot1qArr = explode(',', $interfaceBDI->dot1q_termination);
                                         ?>
+                                        <p>service instance <?php echo $i ?> ethernet</p>
+                                        <p>description <?php echo $interfaceBDI->description; ?></p>
+                                        <p>encapsulation dot1q  <?php
+                                            echo $dot1qArr[0];
+                                            if (isset($dot1qArr[1])) {
+                                                ?> second-dot1q <?php
+                                                echo $dot1qArr[1];
+                                            }
+                                            ?></p>
+                                        <p>rewrite ingress tag pop 1 symmetric</p>
+                                        <p>bridge-domain <?php echo $interfaceBDI->bdi; ?></p>
+                                        <p>!</p>
 
-                                    <?php } ?> 
-                                <?php } ?>
+                                        <?php
+                                        $i++;
+                                    }
+                                    ?>
+
+                                <?php } ?> 
+                            <?php } ?>
+
+                            <?php
+                            if (!empty($BDIL2Model)) {
+                                $j = 1;
+                                foreach ($BDIL2Model as $key => $BDIL2) {
+                                    ?> 
+                                    <p>interface BDI<?php echo $BDIL2->bdi; ?></p>
+                                    <p>description <?php echo $BDIL2->description; ?></p>
+                                    <p>ip address <?php echo $BDIL2->ip_address; ?></p>
+                                    <p>ip ospf cost <?php echo $BDIL2->ospf_cost; ?></p>
+                                    <?php if (!empty($BDIL2->ospf_network_type)) { ?>
+                                        <p>ip ospf network point-to-point </p>
+                                    <?php } ?>            
+                                    <p>ip ospf 1 area <AREA_ID> </p>
+                                        <p>mpls ldp igp sync delay 60 </p>
+                                        <p>mtu 9198</p>
+                                        <p>mpls ip</p>
+                                        <p>bfd interval 200 min_rx 200 multiplier 3</p>
+                                        <p>no bfd echo</p>
+                                        <p>! </p>
+                                        <p>Inter port-channel <?php echo $BDIL2->eth_trunk; ?></p>
+                                        <p>description <?php echo $BDIL2->description; ?></p>
+                                        <p>lacp max-bundle 1</p>
+                                        <p>!</p>
+                                        <p>service instance <?php echo $j; ?> ethernet</p>
+                                        <p>description EFP for LACP packets</p>
+                                        <p>encapsulation untagged</p>
+                                        <p>l2protocol peer</p>
+                                        <p>bridge-domain <?php echo $BDIL2->eth_trunk; ?></p>
+                                        <p>! </p>
+                                        <p>service instance <?php echo $j; ?> ethernet</p>
+                                        <p>encapsulation dot1q <?php echo $BDIL2->dot1q_termination_vid; ?></p>
+                                        <p>rewrite ingress tag pop 1 symmetric</p>
+                                        <p>bridge-domain <?php echo $BDIL2->bdi; ?></p>
+                                        <p>! </p>
+
+                                        <?php
+                                        $j++;
+                                    }
+                                }
+                                ?> 
 
                                 <?php
-                                if (!empty($BDIL2Model)) {
-                                    $j = 1;
-                                    foreach ($BDIL2Model as $key => $BDIL2) {
+                                if (!empty($BDIL3Model)) {
+                                    $k = 1;
+                                    foreach ($BDIL3Model as $key => $BDIL3) {
                                         ?> 
-                                        <p>interface BDI<?php echo $BDIL2->bdi; ?></p>
-                                        <p>description <?php echo $BDIL2->description; ?></p>
-                                        <p>ip address <?php echo $BDIL2->ip_address; ?></p>
-                                        <p>ip ospf cost <?php echo $BDIL2->ospf_cost; ?></p>
-                                        <?php if (!empty($BDIL2->ospf_network_type)) { ?>
+                                        <p>Inter port-channel <?php echo $BDIL3->eth_trunk; ?></p>
+                                        <p>description <?php echo $BDIL3->description; ?></p>
+                                        <p>ip address <?php echo $BDIL3->ip_address; ?></p>
+                                        <p>ip ospf cost <?php echo $BDIL3->ospf_cost; ?></p>
+                                        <?php if (!empty($BDIL3->ospf_network_type)) { ?>
                                             <p>ip ospf network point-to-point </p>
-                                        <?php } ?>            
+                                        <?php } ?> 
                                         <p>ip ospf 1 area <AREA_ID> </p>
                                             <p>mpls ldp igp sync delay 60 </p>
                                             <p>mtu 9198</p>
                                             <p>mpls ip</p>
                                             <p>bfd interval 200 min_rx 200 multiplier 3</p>
                                             <p>no bfd echo</p>
-                                            <p>! </p>
-                                            <p>Inter port-channel <?php echo $BDIL2->eth_trunk; ?></p>
-                                            <p>description <?php echo $BDIL2->description; ?></p>
                                             <p>lacp max-bundle 1</p>
                                             <p>!</p>
-                                            <p>service instance <?php echo $j; ?> ethernet</p>
+                                            <p>service instance <?php echo $k; ?> ethernet</p>
                                             <p>description EFP for LACP packets</p>
                                             <p>encapsulation untagged</p>
                                             <p>l2protocol peer</p>
-                                            <p>bridge-domain <?php echo $BDIL2->eth_trunk; ?></p>
+                                            <p>bridge-domain <?php echo $BDIL3->eth_trunk; ?></p>
                                             <p>! </p>
-                                            <p>service instance <?php echo $j; ?> ethernet</p>
-                                            <p>encapsulation dot1q <?php echo $BDIL2->dot1q_termination_vid; ?></p>
-                                            <p>rewrite ingress tag pop 1 symmetric</p>
-                                            <p>bridge-domain <?php echo $BDIL2->bdi; ?></p>
-                                            <p>! </p>
-
+                                            <p>!</p>
                                             <?php
-                                            $j++;
+                                            $k++;
                                         }
                                     }
                                     ?> 
 
-                                    <?php
-                                    if (!empty($BDIL3Model)) {
-                                        $k = 1;
-                                        foreach ($BDIL3Model as $key => $BDIL3) {
-                                            ?> 
-                                            <p>Inter port-channel <?php echo $BDIL3->eth_trunk; ?></p>
-                                            <p>description <?php echo $BDIL3->description; ?></p>
-                                            <p>ip address <?php echo $BDIL3->ip_address; ?></p>
-                                            <p>ip ospf cost <?php echo $BDIL3->ospf_cost; ?></p>
-                                            <?php if (!empty($BDIL3->ospf_network_type)) { ?>
-                                                <p>ip ospf network point-to-point </p>
-                                            <?php } ?> 
-                                            <p>ip ospf 1 area <AREA_ID> </p>
-                                                <p>mpls ldp igp sync delay 60 </p>
-                                                <p>mtu 9198</p>
-                                                <p>mpls ip</p>
-                                                <p>bfd interval 200 min_rx 200 multiplier 3</p>
-                                                <p>no bfd echo</p>
-                                                <p>lacp max-bundle 1</p>
-                                                <p>!</p>
-                                                <p>service instance <?php echo $k; ?> ethernet</p>
-                                                <p>description EFP for LACP packets</p>
-                                                <p>encapsulation untagged</p>
-                                                <p>l2protocol peer</p>
-                                                <p>bridge-domain <?php echo $BDIL3->eth_trunk; ?></p>
-                                                <p>! </p>
-                                                <p>!</p>
-                                                <?php
-                                                $k++;
-                                            }
-                                        }
-                                        ?> 
-
 
 <!--<p>----------------------------------------------------------</p>-->
-                                        <p>!</p>
-                                        <p>line con 0</p>
-                                        <p>exec-timeout 549 0</p>
-                                        <p>privilege level 15</p>
-                                        <p>login authentication CONSOLE</p>
-                                        <p>stopbits 1</p>
-                                        <p>line aux 0</p>
-                                        <p>login authentication CONSOLE</p>
-                                        <p>no exec</p>
-                                        <p>stopbits 1</p>
-                                        <p>line vty 0 4</p>
-                                        <p>access-class 10 in</p>
-                                        <p>exec-timeout 549 0</p>
-                                        <p>login authentication VTY-TACACS</p>
-                                        <p>transport input ssh</p>
-                                        <p>transport output ssh</p>
-                                        <p>line vty 5 100</p>
-                                        <p>access-class 10 in</p>
-                                        <p>exec-timeout 549 0</p>
-                                        <p>login authentication VTY-TACACS</p>
-                                        <p>transport input ssh</p>
-                                        <p>transport output ssh</p>
-                                        <p>!</p>
-                                        <!--<p>-----------------------------------------</p>-->
+                                    <p>!</p>
+                                    <p>line con 0</p>
+                                    <p>exec-timeout 549 0</p>
+                                    <p>privilege level 15</p>
+                                    <p>login authentication CONSOLE</p>
+                                    <p>stopbits 1</p>
+                                    <p>line aux 0</p>
+                                    <p>login authentication CONSOLE</p>
+                                    <p>no exec</p>
+                                    <p>stopbits 1</p>
+                                    <p>line vty 0 4</p>
+                                    <p>access-class 10 in</p>
+                                    <p>exec-timeout 549 0</p>
+                                    <p>login authentication VTY-TACACS</p>
+                                    <p>transport input ssh</p>
+                                    <p>transport output ssh</p>
+                                    <p>line vty 5 100</p>
+                                    <p>access-class 10 in</p>
+                                    <p>exec-timeout 549 0</p>
+                                    <p>login authentication VTY-TACACS</p>
+                                    <p>transport input ssh</p>
+                                    <p>transport output ssh</p>
+                                    <p>!</p>
+                                    <!--<p>-----------------------------------------</p>-->
 
-                                        <?php //die('Swati')    ?>
+                                    <?php //die('Swati')    ?>
 
 
 
