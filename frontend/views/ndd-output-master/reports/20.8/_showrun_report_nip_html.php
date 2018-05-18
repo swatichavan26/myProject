@@ -148,6 +148,9 @@ use frontend\models\NddInterfaceData; ?>
                                     <?php if (!empty($interface->ospf_time_dead)) { ?>
                                         <p>ospf timer hello <?php echo $interface->ospf_time_dead; ?></p>
                                     <?php } ?>
+                                    <?php if (!empty($interface->ospf_cost)) { ?>
+                                        <p>ip ospf 1 area {AREA_ID}</p>
+                                    <?php } ?>   
                                     <?php if (!empty($interface->ip_address)) { ?>
                                         <p>mpls ip</p>
                                         <p>ip mpls ldp igp sync delay 60</p>
@@ -213,6 +216,9 @@ use frontend\models\NddInterfaceData; ?>
                                     <?php if (!empty($BDIL2->ospf_network_type)) { ?>
                                         <p>ip ospf network point-to-point </p>
                                     <?php } ?>            
+                                    <?php if (!empty($BDIL2->ospf_cost)) { ?>
+                                        <p>ip ospf 1 area {AREA_ID}</p>
+                                    <?php } ?>
                                     <p>ip ospf 1 area <AREA_ID> </p>
                                         <p>mpls ldp igp sync delay 60 </p>
                                         <p>mtu 9198</p>
