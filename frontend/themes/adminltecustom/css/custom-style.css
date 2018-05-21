@@ -365,3 +365,20 @@ input.reachable_via {height: 23px;}
     margin-left: 6px;
     font-size: 11px;}
 .ecr-built-file-link:hover{color:#fff !important;}
+
+/* Topology Images */
+.image-wrapper1{width: 250px; margin: 0 auto; text-align: center; padding: 5px; position: relative; font-size: 11px;}
+.img-point1{position: absolute; left: 15px; top: 46px; width: 60px;}
+.img-point2{position: absolute; right: 14px; top: 48px; width: 60px;}
+.img-point-gb1{position: absolute; left: 75px; top: 102px; border: 1px solid #ddd; background-color: #fff; padding: 0 2px;}
+.img-point-gb2{position: absolute; right: 75px; top: 102px; border: 1px solid #ddd; background-color: #fff; padding: 0 2px;}
+.img-point-bottom{position: absolute; bottom: 14px; left: 103px;}
+
+.image-wrapper2{width: 250px; margin: 0 auto; text-align: center; padding: 5px; position: relative; font-size: 11px;}
+.img2-point1{position: absolute; left: 30px; top: 46px; width: 60px;}
+.img2-point2{position: absolute; right: 0px; top: 46px; width: 60px;}
+.img2-point-gb1{position: absolute; left: 48px; top: 103px; border: 1px solid #ddd; background-color: #fff; padding: 0 2px;}
+.img2-point-gb2{position: absolute; right: 16px; top: 94px; border: 1px solid #ddd; background-color: #fff; padding: 0 2px;}
+.img2-point-gb3{position: absolute; left: 110px; bottom: 57px; border: 1px solid #ddd; background-color: #fff; padding: 0 2px;}
+.img2-point-bottom1{position: absolute; bottom: 14px; left: 34px;}
+.img2-point-bottom2{position: absolute; bottom: 13px; right: 6px;}
