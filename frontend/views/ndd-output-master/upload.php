@@ -6,7 +6,7 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model frontend\models\NddOutputMaster */
 /* @var $form ActiveForm */
-$displayRing = $displaySpur = '';
+$displayRing = $displaySpur = $displayHotSwap = $displayParallelBuild = $displayRingPic =  $displaySpurPic = '' ;
 if (isset($model->topology_type)) {
     if ($model->topology_type == 'Ring') {
         $displayRing = 'display:block;';
@@ -25,7 +25,13 @@ if (isset($model->enterprise_type)) {
     $displayEnt = 'display:none;';
     $displaySpur = 'display:none;';
     $displayRing = 'display:none;';
+    $displayHotSwap = 'display:none;';
+    $displayParallelBuild = 'display:none;';
+    $displayRingPic = 'display:none;';
+    $displaySpurPic = 'display:none;';
 }
+$bundle = frontend\assets\AdminLteCustomAsset::register($this);
+
 ?>
 <h1>Create IP Pool</h1>
 <div class="upload_form">
@@ -33,7 +39,7 @@ if (isset($model->enterprise_type)) {
     <?= $form->errorSummary($model); ?>
     <div class="row">
         
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <div class="form-group"><?= $form->field($model, 'enterprise_type')->dropDownList(['Yes' => 'Yes', 'No' => 'No'], ['id' => 'enterprise_type', 'prompt' => 'Select']); ?></div>
             <div id='entuser' style="<?php echo $displaySpur; ?>">
                 <div class="form-group"><?= $form->field($model, 'user_hostname') ?></div>
@@ -44,7 +50,7 @@ if (isset($model->enterprise_type)) {
             
         
         <div id='entYes' style="<?php echo $displaySpur; ?>">
-        <div class="col-lg-8">
+        <div class="col-lg-6">
             <div class="row" id='topologyDiv'>
                 <div class="col-lg-6">
                     <div class="form-group"><?= $form->field($model, 'topology_type')->dropDownList(['Ring' => 'Ring', 'Spur' => 'Spur'], ['id' => 'topology', 'prompt' => 'Select']); ?></div>
@@ -84,6 +90,48 @@ if (isset($model->enterprise_type)) {
         </div>
         
         </div>
+        
+        <div class="col-lg-3">
+            <div>
+                <div class="image-wrapper1" id="hotSwap" style="<?php echo $displayHotSwap; ?>" >
+                    <img src="<?= $bundle->baseUrl . '/images/pic1.png' ?>">
+                    <span class="img-point1">Nokia<br />7750</span>
+                    <span class="img-point2">Nokia<br />7750</span>
+
+                    <span class="img-point-gb1">10Gb</span>
+                    <span class="img-point-gb2">10Gb</span>
+
+                    <span class="img-point-bottom">Huawei AA<br />X1/X2</span>
+                </div>
+
+                <div class="image-wrapper2" id="RingPic" style="<?php echo $displayRingPic; ?>">
+                    <img src="<?= $bundle->baseUrl . '/images/pic2.png' ?>">
+                    <span class="img2-point1">Nokia<br />7750</span>
+                    <span class="img2-point2">Nokia<br />7750</span>
+
+                    <span class="img2-point-gb1">10Gb</span>
+                    <span class="img2-point-gb2">10Gb</span>
+                    <span class="img2-point-gb3">10Gb</span>
+
+                    <span class="img2-point-bottom1">Huawei AA<br />X1/X2</span>
+                    <span class="img2-point-bottom2">ASR 903</span>
+                </div>
+                
+                <div class="image-wrapper2" id="SpurPic" style="<?php echo $displaySpurPic; ?>">
+                    <img src="<?= $bundle->baseUrl . '/images/pic3.png' ?>">
+<!--                    <span class="img2-point1">Nokia<br />7750</span>
+                    <span class="img2-point2">Nokia<br />7750</span>
+
+                    <span class="img2-point-gb1">10Gb</span>
+                    <span class="img2-point-gb2">10Gb</span>
+                    <span class="img2-point-gb3">10Gb</span>
+
+                    <span class="img2-point-bottom1">Huawei AA<br />X1/X2</span>
+                    <span class="img2-point-bottom2">ASR 903</span>-->
+                </div>
+                
+            </div>
+        </div>
     </div>
     <div>
     </div>
@@ -107,9 +155,14 @@ if (isset($model->enterprise_type)) {
             if (val == 'Ring') {
                 $('#ringDiv').show();
                 $('#SpurDiv').hide();
+                $('#RingPic').show();
+                $('#SpurPic').hide();
+                
             } else {
                 $('#ringDiv').hide();
                 $('#SpurDiv').show();
+                $('#RingPic').hide();
+                $('#SpurPic').show();
             }
         });
 
@@ -120,10 +173,15 @@ if (isset($model->enterprise_type)) {
                 $('#entYes').show();
                 $('#entuser').show();
                 $('#entNo').hide();
+                $('#hotSwap').hide();
+                //$('#parallelBuild').show();
             } else {
                 $('#entYes').hide();
                 $('#entNo').show();
                 $('#entuser').show();
+                $('#hotSwap').show();
+                $('#RingPic').hide();
+                $('#SpurPic').hide();
             }
         });
     });
