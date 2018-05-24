@@ -78,11 +78,11 @@ $bundle = frontend\assets\AdminLteCustomAsset::register($this);
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-6">            
+                <div class="col-lg-6" id='EastDADiv' >            
                     <div class="form-group"><?= $form->field($model, 'east_da_hostname') ?></div>
                     <div class="form-group"><?= $form->field($model, 'east_da_loopback') ?></div>
                 </div>
-                <div class="col-lg-6">            
+                <div class="col-lg-6" id='WestDADiv' >            
                     <div class="form-group"><?= $form->field($model, 'west_da_hostname') ?></div>
                     <div class="form-group"><?= $form->field($model, 'west_da_loopback') ?></div>
                 </div>
@@ -157,12 +157,15 @@ $bundle = frontend\assets\AdminLteCustomAsset::register($this);
                 $('#SpurDiv').hide();
                 $('#RingPic').show();
                 $('#SpurPic').hide();
+                $('#WestDADiv').show();
                 
             } else {
                 $('#ringDiv').hide();
                 $('#SpurDiv').show();
                 $('#RingPic').hide();
                 $('#SpurPic').show();
+                $('#WestDADiv').hide();
+                
             }
         });
 
@@ -183,6 +186,16 @@ $bundle = frontend\assets\AdminLteCustomAsset::register($this);
                 $('#RingPic').hide();
                 $('#SpurPic').hide();
             }
+        });
+        
+        $('#nddoutputmaster-east_ngbr_hostname').change(function () {
+            var valueDaHost = $('#nddoutputmaster-east_ngbr_hostname').val() ; 
+            $('#nddoutputmaster-east_da_hostname').val(valueDaHost);            
+    });
+
+        $('#nddoutputmaster-east_ngbr_loopback').change(function () {
+            var valueDaLoopback = $('#nddoutputmaster-east_ngbr_loopback').val() ;
+            $('#nddoutputmaster-east_da_loopback').val(valueDaLoopback);            
         });
     });
 

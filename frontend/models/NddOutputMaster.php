@@ -51,6 +51,8 @@ class NddOutputMaster extends \yii\db\ActiveRecord {
             'hostname' => 'Host Name',
             'loopback0_ipv4' => 'Loopback0 Ipv4',
             'loopback999_ipv6' => 'Loopback999 Ipv6',
+            'takeoff_hostname' => 'Takeoff Hostname(Huawei)',
+            'takeoff_loopback' => 'Takeoff Loopback(Huawei)',
             'sapid' => 'Sap ID',
         ];
     }
